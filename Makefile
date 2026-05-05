@@ -10,14 +10,14 @@
 
 ####### Compiler, tools and options
 # Environment
-CC               = $(GNUDIR)/g++
-CXX              = $(GNUDIR)/g++
-WINDRES          = $(GNUDIR)/windres
+CC               = g++ -fPIC
+CXX              = g++ -fPIC
+WINDRES          = x86_64-w64-mingw32-windres
 MKDIR            = mkdir
 RM               = rm -f
 CP               = cp -p
 
-32BIT            = true
+32BIT            = false
 #32BIT            = false
 
 ifeq ($(32BIT), false) # 64 bit assumed
@@ -33,7 +33,7 @@ else
 endif
 
 # Macros
-CND_DLIB_EXT     = dll
+CND_DLIB_EXT     = so
 CND_CONF         = Debug
 CND_DISTDIR      = dist
 CND_BUILDDIR     = build
@@ -50,14 +50,14 @@ OBJECTS          = $(OBJECTDIR)/src/Cspbridg.o $(OBJECTDIR)/src/Cspcard.o $(OBJE
                    $(OBJECTDIR)/src/cspcapa.o $(OBJECTDIR)/src/cspcover.o $(OBJECTDIR)/src/cspdebug.o \
                    $(OBJECTDIR)/src/cspgomo.o $(OBJECTDIR)/src/cspheur.o $(OBJECTDIR)/src/cspprep.o \
                    $(OBJECTDIR)/src/cspprice.o $(OBJECTDIR)/src/cspsep.o $(OBJECTDIR)/src/cspsolve.o \
-                   $(OBJECTDIR)/src/Versioninfo.o
+                   #$(OBJECTDIR)/src/Versioninfo.o
 
 STAMP            =# -DSTAMP
 
 CXXFLAGS	 = -g -O2 -Wall -DMICROSOFT2 $(BITS)
 #CXXFLAGS         = -ggdb -O0 -Wall -DMICROSOFT2 $(BITS)
 
-CSPCPX           = CSPlibCPLEX
+CSPCPX           = libCSP_CPLEX
 CPXFLAGS         = $(CXXFLAGS) -DCPLEX7 -DBUILD_CPXSTATIC
 ifeq ($(32BIT),false)
     CPXDIR       = ../Solvers/Cplex/Cplex125/Windows/64bits
@@ -70,22 +70,22 @@ else
 endif
 CPXINC           = -I$(CPXDIR)/include/ilcplex
 
-CSPXPR           = CSPlibXPRESS
+CSPXPR           = libCSP_XPRESS
 XPRFLAGS         = $(CXXFLAGS) -DXPRESS_13
 #XPRDIR           = ../Solvers/XPress/XPress_28/$(ARCH)
 XPRDIR           = ../Solvers/XPress/XPress_19
 XPRINC           = -I$(XPRDIR)
 XPRLIBS          = -L$(XPRDIR) -lxprl -lxprs
 
-CSPSCIP          = CSPlibSCIP
+CSPSCIP          = libCSP_SCIP
 SCIPFLAGS        = $(CXXFLAGS) -DVSCIP -Dsoplex
 DIRLPS           = ../Solvers/scip-3.1.1
 DIRSOPLEX        = ../Solvers/soplex-2.0.1
-SOPLEXLIB        = soplex-2.0.1.mingw.$(ARCH).gnu.opt
-NLPILIB          = nlpi.cppad-3.1.1.mingw.$(ARCH).gnu.opt
-SCIPLIB          = scip-3.1.1.mingw.$(ARCH).gnu.opt
-OBJSCIPLIB       = objscip-3.1.1.mingw.$(ARCH).gnu.opt
-LPISPXLIB        = lpispx-3.1.1.mingw.$(ARCH).gnu.opt
+SOPLEXLIB        = soplex-2.0.1.linux.$(ARCH).gnu.opt
+NLPILIB          = nlpi.cppad-3.1.1.linux.$(ARCH).gnu.opt
+SCIPLIB          = scip-3.1.1.linux.$(ARCH).gnu.opt
+OBJSCIPLIB       = objscip-3.1.1.linux.$(ARCH).gnu.opt
+LPISPXLIB        = lpispx-3.1.1.linux.$(ARCH).gnu.opt
 SCIPINC          = -I$(DIRLPS)/src -I$(DIRSOPLEX)/src
 SCIPLIBS         = -L$(DIRLPS)/lib -L$(DIRSOPLEX)/lib -L$(DIRLPS)/lib -l$(OBJSCIPLIB) -l$(SCIPLIB) -l$(NLPILIB) -l$(LPISPXLIB) -l$(SOPLEXLIB)
 
@@ -96,7 +96,7 @@ all : CPLEX XPRESS SCIP
 CPLEX :
 	$(MKDIR) -p $(OBJECTDIR)/src
 	$(MKDIR) -p $(CND_DISTDIR)/$(CND_CONF)/$(CND_PLATFORM)
-	$(WINDRES) ./src/Versioninfo.rc $(CND_BUILDDIR)/$(CND_CONF)/$(CND_PLATFORM)/src/Versioninfo.o
+	#$(WINDRES) ./src/Versioninfo.rc $(CND_BUILDDIR)/$(CND_CONF)/$(CND_PLATFORM)/src/Versioninfo.o
 	$(CXX) -c $(STAMP) $(CPXFLAGS) $(CPXINC) -o $(OBJECTDIR)/src/Cspbridg.o src/Cspbridg.c
 	$(CXX) -c $(STAMP) $(CPXFLAGS) $(CPXINC) -o $(OBJECTDIR)/src/Cspcard.o src/Cspcard.c
 	$(CXX) -c $(STAMP) $(CPXFLAGS) $(CPXINC) $(INCTAUPATH) -o $(OBJECTDIR)/src/Cspmain.o src/Cspmain.c
