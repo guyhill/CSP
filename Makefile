@@ -165,7 +165,7 @@ SCIP :
 	$(CXX) -c $(SCIPFLAGS) $(SCIPINC) -o $(OBJECTDIR)/src/cspprice.o src/cspprice.c
 	$(CXX) -c $(SCIPFLAGS) $(SCIPINC) -o $(OBJECTDIR)/src/cspsep.o src/cspsep.c
 	$(CXX) -c $(SCIPFLAGS) $(SCIPINC) $(INCTAUPATH) -o $(OBJECTDIR)/src/cspsolve.o src/cspsolve.c
-	$(CXX) -o $(CND_DISTDIR)/$(CND_CONF)/$(CND_PLATFORM)/$(CSPSCIP).$(CND_DLIB_EXT) $(OBJECTS) $(SCIPFLAGS) $(SCIPLIBS) -shared #-static-libgcc -static-libstdc++
+	$(CXX) -o $(CND_DISTDIR)/$(CND_CONF)/$(CND_PLATFORM)/$(CSPSCIP).$(CND_DLIB_EXT) $(OBJECTS) $(SCIPFLAGS) $(SCIPLIBS) -shared  -Wl,-Bsymbolic #-static-libgcc -static-libstdc++
 	$(CP) $(CND_DISTDIR)/$(CND_CONF)/$(CND_PLATFORM)/$(CSPSCIP).$(CND_DLIB_EXT) ../tauargus
 	
 clean:
