@@ -23,9 +23,9 @@
 #include <malloc.h>
 //#include <crtdbg.h>
 #include <math.h>
-#include "Cspdefns.h"
-#include "CSPGLOB2.H"
-#include "Jjsolver.h"
+#include "cspdefns.h"
+#include "cspglob2.h"
+#include "jjsolver.h"
 #include "cspback.h"
 #ifdef   CHECKLP
 #include "check.c"
@@ -35,7 +35,7 @@
 #include "cspnet.h"
 #include "cspdebug.h"
 #include "cspcover.h"
-#include "CSPGOMO.H"
+#include "cspgomo.h"
 #include "cspback.h"
 
 

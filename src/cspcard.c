@@ -17,8 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include "Cspdefns.h"
-#include "CSPGLOB2.H"
+#include "cspdefns.h"
+#include "cspglob2.h"
 #include "cspcard.h"
 #include "cspback.h"
 

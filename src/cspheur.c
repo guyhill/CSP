@@ -19,9 +19,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Cspdefns.h"
-#include "CSPGLOB2.H"
-#include "Jjsolver.h"
+#include "cspdefns.h"
+#include "cspglob2.h"
+#include "jjsolver.h"
 #ifdef CHECKLP
 #include "check.c"
 #endif

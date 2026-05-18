@@ -18,8 +18,8 @@
 #include <string.h>
 #include <math.h>
 #include <iostream>
-#include "Cspdefns.h"
-#include "CSPGLOB.H"
+#include "cspdefns.h"
+#include "cspglob.h"
 #include "cspmain.h"
 #include "cspprep.h"
 #include "cspnet.h"
@@ -32,7 +32,7 @@
 #include "cspcard.h"
 #include "cspback.h"
 #include "cspdebug.h"
-#include "CSPGLOB2.H"
+#include "cspglob2.h"
 
 /*#ifdef WIN32 //|| WIN64
     #include <direct.h>
