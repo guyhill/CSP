@@ -22,7 +22,7 @@
 #include "mt1rc.h"
 #include "cspsep.h"
 #include "cspback.h"
-
+#include "cspcapa.h"
 
 
 static  CONSTRAINT *cover_constraint(CONSTRAINT *);
@@ -454,7 +454,6 @@ double     get_coeficient_cover(VARIABLE   *col,CONSTRAINT *con)
 
 {
     int i;
-    extern double get_coeficient_capacity(VARIABLE *,CONSTRAINT *);
 
     if( get_coeficient_capacity(col,con->con)<ZERO ) return(0);
     for(i=0;i<con->card;i++)

@@ -19,3 +19,6 @@ double solve_child_row(CONSTRAINT *,int);
 int    integer_solution(void);
 void   control(void);
 void   activa_pricing(void);
+
+extern float toptimize;
+extern int pricing_done;

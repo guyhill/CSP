@@ -41,13 +41,11 @@
 #define    MAX_DEN_GOMORY  3000
 #define    MAX_COEF_GOMORY 3000
 
+extern JJLPptr lp;
 
 static int  chvatal(int,double *,CONSTRAINT **,int *,CONSTRAINT **,int,int,int*,double,int);
 static int  different_gomory(int,VARIABLE **,int *,int,CONSTRAINT **);
 static int  adding(CONSTRAINT *,double,double *,double *);
-
-
-extern JJLPptr lp;
 
 /*******************************************************************/
 
@@ -389,11 +387,8 @@ static      int adding(CONSTRAINT  *con,double rb,double      *ra,double      *r
 
 {
     int       card;
-/*    int       divisor;  */
     VARIABLE  **stack;
     double    *coef;
-    //extern    mcd(int*,int);
-    //extern    mcd2(int,int);
     
 
     if( con->sense != 'G' ){
@@ -426,10 +421,7 @@ static      int adding(CONSTRAINT  *con,double rb,double      *ra,double      *r
     }
 
 
-/*    divisor = mcd2( mcd( coef , card ) , con->rhs ); */
-/*    rb = rb * divisor;  */
     rb = rb - floor(rb+ZERO);
-/*    rb = rb / divisor;  */
 
     if( rb>ZERO ){
         while(card--) ra[ stack[card]->index ] += coef[card] * rb;

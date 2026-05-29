@@ -40,17 +40,10 @@
     #include <unistd.h>
 #endif*/
 
-std::streambuf *psbuf, *backup;
-std::ofstream filestr;
+static std::streambuf *psbuf, *backup;
+static std::ofstream filestr;
 
 /*  PROTOTYPES OF FUNCTIONS  */
-
-
-extern int    l1u1,l1u0,l0u1,l0u0;
-extern int    pricing_done;
-extern struct BRANCH *tree;
-extern float  tpricing,toptimize;
-
 
 static int    change_status(char*);
 static void   init_variable_type(void);
@@ -87,8 +80,6 @@ int     PPCSPrelbounds(int,int*,double*,double*,char);
 #ifdef VSCIP
 namespace SCIPv{
 SCIP *_scip;
-//__declspec(dllexport) SCIP_LPI **Env;
-//extern  SCIP_LPI **Env;
 void    CSPSetFileNames(const char* dir){ PPCSPSetFileNames(dir); }
 void    CSPFreeFileNames(){ PPCSPFreeFileNames(); }
 void    CSPSetDoubleConstant(const int VarNumber, double VarValue){ PPCSPSetDoubleConstant(VarNumber, VarValue); }
@@ -604,7 +595,6 @@ OUT:
 
 static struct CELDA **listcell,**listsum;
 static int          *nlistcell,*nlistsum;
-std::string filenameA;   // Salome added 31/01/2014
 
 int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight_,char *status_,double *lpl_,double *upl_,double *lb_,double *ub_,char **names_,int  *nlist_,int  *listcell_,signed char *listcoef_)
 
@@ -613,9 +603,6 @@ int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight
     VARIABLE *col;
     struct   CELDA *c;
 
-    //filenameA = _getcwd(NULL, 0);
-    //filenameA.append("\\logfile.txt");
-    //filestr.open (filenameA.c_str());//logfile);     // Salome modified 31/01/2014
     filestr.open (fCSPlog);     /*PWOF to write logfile in temp-directory 03-02-2014*/
 
     backup = std::cout.rdbuf();     // back up cout's streambuf

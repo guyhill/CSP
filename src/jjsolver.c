@@ -13,10 +13,8 @@
 #include <string.h>
 #include <cstring>
 #include "jjsolver.h"
-extern char* fproblemlp;
-
-extern double FEAS_TOL;
-extern double OPT_TOL;
+#include "cspdefns.h"
+#include "cspglob2.h"
 
 static unsigned int lpJJ = 0;           /* for counting the loaded LP's   */
 
