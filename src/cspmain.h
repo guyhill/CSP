@@ -23,7 +23,7 @@
 
 // Header files from tauhitas for callback facility with Java
 #include "IProgressListener.h"
-#include "ICallback.h"
+
 
 // Different implementation for different solvers
 // Assigned to different namespaces to be able to choose solver at runtime
