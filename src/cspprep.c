@@ -16,8 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include "Cspdefns.h"
-#include "CSPGLOB2.H"
+#include "cspdefns.h"
+#include "cspglob2.h"
 #include "cspprep.h"
 #include "cspnet.h"
 #include "cspsep.h"

@@ -1,0 +1,4 @@
+cells sums cells sums |P| pl0 l1u1 l1u0 l0u1 l0u0  tprep  theur0   UB0  theur1  theur*    UB1     LB1     time   opt   SUP   time  BestLB  nodes    Ttime   Tsepar  Tprice   Toptim  maxmar cuts  pool  bender capa  bridge cover cover2 gomo comb  path path2 iterations  UBtype
+
+168  69 125  62  15  24   9   0   6   0      0.1      0.1     1329      0.1      0.1     1329   1329.0      0.3     1329   12      0.2  1329    1     0.30      0.1      0.0      0.0    64    73    15    15    27    28     3     0     0     0     0     0      14    H
+168  69 125  62  15  24   9   0   6   0      0.1      0.0     1329      0.0      0.0     1329   1329.0      0.2     1329   12      0.1  1329    1     0.16      0.0      0.0      0.0    64    73    15    15    27    28     3     0     0     0     0     0      14    H

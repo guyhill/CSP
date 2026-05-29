@@ -17,15 +17,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "Cspdefns.h"
-#include "CSPGLOB2.H"
-#include "CSPGOMO.H"
+#include "cspdefns.h"
+#include "cspglob2.h"
+#include "cspgomo.h"
 #include "cspcapa.h"
 #include "cspbridg.h"
 #include "cspcover.h"
 #include "cspsep.h"
 #include "cspdebug.h"
-#include "Jjsolver.h"
+#include "jjsolver.h"
 #include "cspback.h"
 
 

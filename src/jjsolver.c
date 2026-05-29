@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cstring>
-#include "Jjsolver.h"
+#include "jjsolver.h"
 extern char* fproblemlp;
 
 extern double FEAS_TOL;
@@ -3008,7 +3008,7 @@ double    *y
     
 #ifdef VSCIP
     //std::cout << "\nJJbinvrow" << std::endl;
-    SCIPlpiGetBInvRow(lp,i,y);
+    SCIPlpiGetBInvRow(lp,i,y, NULL, NULL);
     return 0;
 #endif
 }
@@ -3043,8 +3043,8 @@ double    *z
 #ifdef VSCIP
     //std::cout << "\nJJbinvarow" << std::endl;
     double *binvrow = new SCIP_Real[JJgetmar(lp)];
-    SCIPlpiGetBInvRow(lp,i,binvrow);
-    SCIPlpiGetBInvARow(lp,i,binvrow,z);
+    SCIPlpiGetBInvRow(lp,i,binvrow, NULL, NULL);
+    SCIPlpiGetBInvARow(lp,i,binvrow,z, NULL, NULL);
     //PWOF change 23-08-2013
     //delete binvrow;
     delete[] binvrow;

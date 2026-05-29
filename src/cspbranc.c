@@ -17,8 +17,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
-#include "Cspdefns.h"
-#include "CSPGLOB2.H"
+#include "cspdefns.h"
+#include "cspglob2.h"
 #include "cspsolve.h"
 #include "cspbranc.h"
 #include "cspdebug.h"
