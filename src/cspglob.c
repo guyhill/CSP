@@ -10,6 +10,8 @@
 /* Last modified 15 July 1995                       */
 /****************************************************/
 
+#include "cspdefns.h"
+
 /* Global variables for CSP */
 
 int            Rncells;    /* number of cells after reduction      */
@@ -78,7 +80,6 @@ char* fout;
 char* fbranch;
 char* fproblemlp;
 char* fsdcnetlp;
-char* fCSPlog;
 char* fsdclp;
 char* fpartial;
 char* fmpsnet;

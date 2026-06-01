@@ -19,7 +19,6 @@
 #include <math.h>
 #include <iostream>
 #include "cspdefns.h"
-#include "cspglob.h"
 #include "cspmain.h"
 #include "cspprep.h"
 #include "cspnet.h"
@@ -42,6 +41,7 @@
 
 static std::streambuf *psbuf, *backup;
 static std::ofstream filestr;
+static char *fCSPlog;
 
 /*  PROTOTYPES OF FUNCTIONS  */
 
