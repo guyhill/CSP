@@ -35,7 +35,6 @@
 #include "cspnet.h"
 #include "cspdebug.h"
 #include "cspcover.h"
-#include "cspgomo.h"
 #include "cspback.h"
 #include "my_time.h"
 

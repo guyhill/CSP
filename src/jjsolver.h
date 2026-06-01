@@ -8,7 +8,6 @@
 /*  M-S Hern�ndez-Garc�a              Spain, 2013                  */
 /*******************************************************************/
 
-#include "cspmain.h"
 #include "cspback.h"
 
 #ifndef CPLEX7

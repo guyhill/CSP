@@ -25,7 +25,6 @@
 #include "cspcover.h"
 #include "cspgomo.h"
 #include "cspbranc.h"
-#include "cspheur.h"
 #include "cspback.h"
 #include "my_time.h"
 

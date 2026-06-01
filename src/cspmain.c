@@ -28,7 +28,6 @@
 #include "cspcapa.h"
 #include "cspsolve.h"
 #include "cspprice.h"
-#include "cspcard.h"
 #include "cspback.h"
 #include "cspdebug.h"
 #include "cspglob2.h"

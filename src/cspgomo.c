@@ -20,11 +20,8 @@
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "cspgomo.h"
-#include "cspcapa.h"
-#include "cspbridg.h"
 #include "cspcover.h"
 #include "cspsep.h"
-#include "cspdebug.h"
 #include "jjsolver.h"
 #include "cspback.h"
 
