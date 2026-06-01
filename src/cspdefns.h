@@ -113,6 +113,3 @@ typedef struct {
 #ifndef VSCIP
         #define   MIN(x,y)   ( (x) < (y) ? (x) : (y) )
 #endif
-
-/* Time function             */
-float  seconds(void);

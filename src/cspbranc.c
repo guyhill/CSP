@@ -90,9 +90,6 @@ static void write_prob()
     int      k,cont;
     VARIABLE *col;
     FILE     *pfile;
-//    float    t1;
-    
-//    t1 = seconds();
 
     pfile = fopen(fbranch,"a");
     if(pfile==NULL){          
@@ -157,7 +154,6 @@ int read_prob()
     struct BRANCH  *ptr;
     VARIABLE       *col;
     FILE           *pfile;
-//    float          t1;
 
     do{
         if( tree==NULL ) return(0);
@@ -170,7 +166,6 @@ int read_prob()
 #ifdef STAMP
     std::cout << "  >>>>>>>>>>>>> reading problem " << (float)lowerb << std::endl;
 #endif
- //   t1 = seconds();
     pfile = fopen(fbranch,"r");
     if(pfile==NULL){          
           std::cout << "ERROR: not possible to write on " << fbranch << std::endl;

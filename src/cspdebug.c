@@ -25,7 +25,7 @@
 #include "cspnet.h"
 #include "cspcover.h"
 #include "cspback.h"
-
+#include "my_time.h"
 
 
 static int    in_better(VARIABLE *);
