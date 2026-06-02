@@ -469,10 +469,6 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
 
             if ( lcuts==0 ) {
                  old_ub = upperb;
-/**
-                 if( branchs ) heuristic(0);
-                 else          heuristic(1);
-**/
                  if( Rncells<1000 && Rnsums<1000) heuristic(1);
                  else                             heuristic(0);
 
@@ -481,16 +477,6 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
                  if( pricing_done==0 || upperb<old_ub )
                      if( pricing(1) ) goto JUMP;
                  if( integer_solution() ) break;
-/****
-                 if( branchs==0 )
-                     insert_cutcard();
-****/
-
-/****
-                 k = con_branching();
-                 if((k==1) || (k==-1 && var_branching() ))
-                     break;
-****/
                  if ( var_branching() ) break;
 
             } else
