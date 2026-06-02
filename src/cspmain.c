@@ -698,13 +698,8 @@ int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight
                           break;
                 case 2:
                           col->sensitive = 1;
-#ifdef PARTIAL
-                          col->stat      = LP_LB;
-                          col->val       = 0.5;
-#else
                           col->stat      = FIX_UB;
                           col->val       = 1.0;
-#endif
                           nsensitive++;
                           break;
                 case 9:

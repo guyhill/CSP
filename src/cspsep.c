@@ -48,38 +48,13 @@ static int    tailingoff(void);
 void       separa(int        *card,CONSTRAINT **stack)
 
 {
-#ifdef PARTIAL    
-    int k,l;
-    double range;
-    VARIABLE *var;
-#else
     if( tailingoff() )
         return;
-#endif
     separa_pool(card,stack);
 
     if( *card ) return;
 
     separa_capacity(card,stack);
-
-#ifdef PARTIAL    
-    if( *card ) return;
-
-
-    write_sol(fpartial);
-    range = 0.0;
-    for(k=0;k<nsupport;k++){
-        var = support[k];
-        range += var->weight * ceil( var->val * var->lvalue );
-        range += var->weight * ceil( var->val * var->uvalue );
-        std::cout << "name=" << var->name << " val=" << var->val << " lb=" << var->lvalue << " ub=" << var->uvalue << " w=" << var->weight;
-        std::cout << " z-=" << var->val*var->lvalue << " z+=" var->val*var->uvalue << std::endl;
-    }
-    for(l=k=0;k<nsupport;k++)
-        if( support[k]->sensitive == 0 ) l++;
-    std::cout << " partial solution: sup=" << l << "  loss=" << lowerb << " (rounded=" << range << ") time=" << seconds()-t0 << std::endl;
-    CSPexit(EXIT_ERROR); //exit(1);
-#endif
 
     if( *card ==0 && integrability() ) return;
 

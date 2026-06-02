@@ -128,12 +128,6 @@ void   load_network(double *status,char type)
         VARIABLE *var;
         struct   CELDA *c;
 
-#ifdef PARTIAL
-        for(i=0;i<Rncells;i++)
-            if(columns[i].sensitive && status[i]<ZERO) status[i]=2*ZERO;
-#endif
-
-
         /* allocation memory */
 
         macsz = Rncells;

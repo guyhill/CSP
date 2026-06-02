@@ -127,14 +127,12 @@ CONSTRAINT *capacity_constraint(int nvar,VARIABLE  **xvar,double    *cvar,VARIAB
         double     *c;
         double     maxlhs;
 
-#ifndef PARTIAL
         for(l=k=0;k<nvar;k++)
             if( cvar[k] > rhs-ZERO ) l++;
         if(l==nvar && rhs>ZERO){
             rhs = 1;
             for(k=0;k<nvar;k++) cvar[k]=1;
         }
-#endif
 
 
         row = (CONSTRAINT *)malloc( sizeof(CONSTRAINT) );
@@ -162,12 +160,10 @@ CONSTRAINT *capacity_constraint(int nvar,VARIABLE  **xvar,double    *cvar,VARIAB
             x[k] = xvar[k];
             c[k] = cvar[k];
 
-#ifndef PARTIAL 
             if( xvar[k]->stat==FIX_UB && xvar[k]->lp==0 )
                 c[k] = ( cvar[k]>rhs ? rhs : cvar[k] );
             else   
                 c[k] = ( cvar[k]>maxlhs ? maxlhs : cvar[k] );
-#endif
 
         }
    

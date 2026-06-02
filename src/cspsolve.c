@@ -184,9 +184,6 @@ int load_lp()
 
                      bdl[mac] = 0.0;
                      bdu[mac] = 1.0;
-#ifdef PARTIAL
-                     if(col->sensitive) bdl[mac] = 0.5;
-#endif
                      mac++;
                      break;
             }
