@@ -1,5 +1,5 @@
 CC = g++	# Some C++ is used, should remove that...
-CFLAGS = -g -Wall -DVSCIP -Dsoplex -fPIC
+CFLAGS = -g -Wall -fPIC
 LDFLAGS = $(CFLAGS) -shared -Wl,-Bsymbolic -Wl,-zdefs
 LIBS = -lscip
 TARGET = libcsp.so
