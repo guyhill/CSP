@@ -18,9 +18,6 @@
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "jjsolver.h"
-#ifdef CHECKLP
-#include "check.c"
-#endif
 #include "cspheur.h"
 #include "cspsep.h"
 #include "cspdebug.h"
@@ -366,17 +363,6 @@ static void   load_2network(char *status)
                 cell2net[i]    = -1;
         }
 
-#ifdef CHECKLP
-        l = JJcheckprob (Nprobname, mac, mar, 0, 1, Nobjx, Nrhsx,
-                       Nsenx, Nmatbeg, Nmatcnt, Nmatind, Nmatval,
-                       Nbdl , Nbdu , NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL, NULL,
-                       macsz, marsz, matsz, 0, 0, 0, 0, 0, NULL);
-        if(l)CSPexit(EXIT_ERROR); //exit(1);
-#endif
-
         Nlp = JJloadprob (Nprobname, mac, mar, 0, 1, Nobjx, Nrhsx,
                        Nsenx, Nmatbeg, Nmatcnt, Nmatind, Nmatval,
                        Nbdl , Nbdu , NULL, NULL,
@@ -390,9 +376,6 @@ static void   load_2network(char *status)
                 CSPexit(EXIT_LPSOLVER); //exit(1);
         }
 
-#ifdef CHECKLP
-        JJmpswrite(Nlp,fmpsnet);
-#endif
 }
 
 /**

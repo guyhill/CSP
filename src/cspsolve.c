@@ -26,9 +26,6 @@
 #include "cspglob2.h"
 #include "jjsolver.h"
 #include "cspback.h"
-#ifdef   CHECKLP
-#include "check.c"
-#endif
 #include "cspsolve.h"
 #include "cspprice.h"
 #include "cspnet.h"
@@ -189,17 +186,6 @@ int load_lp()
             }
         }
 
-#ifdef CHECKLP
-        k = JJcheckprob (probname, mac, mar, 0, 1, objx, rhsx,
-                       senx, matbeg, matcnt, matind, matval,
-                       bdl , bdu , NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL, NULL,
-                       macsz, marsz, matsz, 0, 0, 0, 0, 0, NULL);
-
-        if(k)CSPexit(EXIT_LPSOLVER); //exit(1);
-#endif
         lp = JJloadprob (probname, mac, mar, 0, 1, objx, rhsx,
                        senx, matbeg, matcnt, matind, matval,
                        bdl , bdu , NULL, NULL,

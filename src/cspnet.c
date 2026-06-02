@@ -13,18 +13,11 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-
-/* #define CHECKLP */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "jjsolver.h"
-#ifdef CHECKLP
-#include "\cplex50\check.c"
-#endif
 #include "cspnet.h"
 #include "cspback.h"
 
@@ -237,19 +230,6 @@ void   load_network(double *status,char type)
         }
 
        /* LP loading */
-
-
-#ifdef CHECKLP
-        l = JJcheckprob (Nprobname, mac, mar, 0, -1, Nobjx, Nrhsx,
-                       Nsenx, Nmatbeg, Nmatcnt, Nmatind, Nmatval,
-                       Nbdl , Nbdu , NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL, NULL,
-                       macsz, marsz, matsz, 0, 0, 0, 0, 0, NULL);
-        if(l)CSPexit(EXIT_ERROR); //exit(1);
-#endif
-
         Nlp = JJloadprob (Nprobname, mac, mar, 0, -1, Nobjx, Nrhsx,
                        Nsenx, Nmatbeg, Nmatcnt, Nmatind, Nmatval,
                        Nbdl , Nbdu , NULL, NULL,
@@ -269,11 +249,6 @@ void   load_network(double *status,char type)
 			free(Nxctype);
                         Nxctype = NULL; /*PWOF*/ 
 		}
-
-
-#ifdef CHECKLP
-        JJmpswrite(Nlp,fmpsnet);
-#endif
 }
 
 /**
