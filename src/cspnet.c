@@ -521,23 +521,9 @@ void free_col(int index,double *bd)
     JJgetbdl(Nlp,bd,j,j);
     JJgetbdu(Nlp,bd+1,j,j);
     ind[0] = ind[1] = j;
-#ifdef VSCIP
     value[0] = -SCIPlpiInfinity(Nlp);
     value[1] = SCIPlpiInfinity(Nlp);
-#endif
-#ifdef CPLEX5 // Also CPLEX7
-    value[0] = -CPX_INFBOUND; //-INFBOUND;
-    value[1] = CPX_INFBOUND;  //INFBOUND;
-#endif
-#ifdef XPRESS
-    value[0] = -XPRS_PLUSINFINITY;
-    value[1] = XPRS_PLUSINFINITY;
-#endif
-#ifdef XPRESS_13
-    value[0] = -XPRS_PLUSINFINITY;
-    value[1] = XPRS_PLUSINFINITY;
-#endif
-    JJchgbds(Nlp,2,ind,lu,value);
+     JJchgbds(Nlp,2,ind,lu,value);
 }
 
 void unfree_col(int index,double *bd)

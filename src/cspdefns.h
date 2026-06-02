@@ -88,28 +88,3 @@ typedef struct {
     double    level;          /* protection level value                    */
     int       study;          /* 1=not known autoprotection                */
 } PROT_LEVEL;
-
-
-/* Setting output-file names */
-//#define fsolution "cspSCIP.sol"   /* name of the file with the fractional sol. */
-//#define fheuristi "cspSCIP.heu"   /* name of the file with the feasible sol.   */
-//#define fout      "cspSCIP.sta"   /* name of the file for results              */
-//#define fbranch   "cspSCIP.bra"   /* name of the file for saving bases         */
-
-/* Setting parameters        */
-//#define ZERO       1.0E-7   /* zero-epsilon                             */
-//#define INF        1.0E+9   //2140000000   /* infinity                                 */
-//#define MAX_TIME  18000000.0   /* maximum total CPU time                   */
-//#define MAX_COLS_LP   10110  /* maximum number of columns in the LP      */
-//#define MAX_ROWS_LP    4000  /* maximum number of cuts in the LP         */
-//#define MAX_CUTS_POOL 500000  /* maximum number of cuts in the POOL       */
-//#define MAX_CUTS_ITER   50   /* maximum number of new cuts per iteration */
-//#define MIN_VIOLA    0.001   /* minimum violation for valid cuts         */
-//#define MAX_SLACK    0.01    /* maximum slack for cuts in the LP         */
-
-
-
-/* Mathematical abreviations */
-#ifndef VSCIP
-        #define   MIN(x,y)   ( (x) < (y) ? (x) : (y) )
-#endif

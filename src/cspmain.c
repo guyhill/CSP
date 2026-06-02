@@ -71,7 +71,6 @@ int     PPCSPsolution(int*,int*,char*);
 int     PPCSPrelbounds(int,int*,double*,double*,char);
 
 // namespace SCIPv
-#ifdef VSCIP
 namespace SCIPv{
 SCIP *_scip;
 void    CSPSetFileNames(const char* dir){ PPCSPSetFileNames(dir); }
@@ -87,44 +86,6 @@ int     CSPfreeprob(){ return PPCSPfreeprob(); }
 int     CSPsolution(int *lowerb_,int *upperb_,char *status_){ return PPCSPsolution(lowerb_,upperb_,status_); }
 int     CSPrelbounds(int nlist,int *list,double *ub,double *lb,char type){ return PPCSPrelbounds(nlist,list,ub,lb,type); }
 }
-#endif
-
-// namespace CPLEX7
-#ifdef CPLEX7
-namespace CPLEXv{
-EXPORTFUNC CPXENVptr Env;
-void    CSPSetFileNames(const char* dir){ PPCSPSetFileNames(dir); }
-void    CSPFreeFileNames(){ PPCSPFreeFileNames(); }
-void    CSPSetDoubleConstant(const int VarNumber, double VarValue){ PPCSPSetDoubleConstant(VarNumber, VarValue); }
-double  CSPGetDoubleConstant(const int VarNumber){ return PPCSPGetDoubleConstant(VarNumber); }
-void    CSPSetIntegerConstant(const int VarNumer, int VarValue){ PPCSPSetIntegerConstant(VarNumer, VarValue); }
-int     CSPGetIntegerConstant(const int VarNumber){ return PPCSPGetIntegerConstant(VarNumber); }
-int	CSPoptimize(IProgressListener* ProgressListener){ return PPCSPoptimize(ProgressListener); }
-int     CSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight_,char *status_,double *lpl_,double *upl_,double *lb_,double *ub_,char **names_,int  *nlist_,int  *listcell_,signed char *listcoef_)
-			{ return PPCSPloadprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_); }
-int     CSPfreeprob(){ return PPCSPfreeprob(); }
-int     CSPsolution(int *lowerb_,int *upperb_,char *status_){ return PPCSPsolution(lowerb_,upperb_,status_); }
-int     CSPrelbounds(int nlist,int *list,double *ub,double *lb,char type){ return PPCSPrelbounds(nlist,list,ub,lb,type); }
-}
-#endif
-
-// namespace XPRESS
-#ifdef XPRESS_13
-namespace XPRESSv{
-void    CSPSetFileNames(const char* dir){ PPCSPSetFileNames(dir); }
-void    CSPFreeFileNames(){ PPCSPFreeFileNames(); }
-void    CSPSetDoubleConstant(const int VarNumber, double VarValue){ PPCSPSetDoubleConstant(VarNumber, VarValue); }
-double  CSPGetDoubleConstant(const int VarNumber){ return PPCSPGetDoubleConstant(VarNumber); }
-void    CSPSetIntegerConstant(const int VarNumer, int VarValue){ PPCSPSetIntegerConstant(VarNumer, VarValue); }
-int     CSPGetIntegerConstant(const int VarNumber){ return PPCSPGetIntegerConstant(VarNumber); }
-int	CSPoptimize(IProgressListener* ProgressListener){ return PPCSPoptimize(ProgressListener); }
-int     CSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight_,char *status_,double *lpl_,double *upl_,double *lb_,double *ub_,char **names_,int  *nlist_,int  *listcell_,signed char *listcoef_)
-			{ return PPCSPloadprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_); }
-int     CSPfreeprob(){ return PPCSPfreeprob(); }
-int     CSPsolution(int *lowerb_,int *upperb_,char *status_){ return PPCSPsolution(lowerb_,upperb_,status_); }
-int     CSPrelbounds(int nlist,int *list,double *ub,double *lb,char type){ return PPCSPrelbounds(nlist,list,ub,lb,type); }
-}
-#endif
 
 /*  FUNCTIONS  */
 // PWOF: 11-04-2013 added to control outputfilenames and variables
