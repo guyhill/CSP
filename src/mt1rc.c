@@ -69,7 +69,6 @@ void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,
 
 int LL,KK,NM2,JJ,LOLD,II,JJ1,JP1,NEL,J1,IN,J,NN,N1;
 double LIM,LIM1,IP,MINK,IU,CH,CHS,PROFIT,R,DIFF,T,A,B,EPSP;
-//void CHMT1RC();
 
 *Z = 0.0;
 if (JCK == 1) CHMT1RC(N,P,W,C,Z,JDIM);

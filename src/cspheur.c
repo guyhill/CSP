@@ -13,10 +13,6 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-/*
-#define CHECKLP
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "cspdefns.h"
@@ -39,7 +35,6 @@ static JJLPptr Nlp; // included by Salome 12/2/2012
 #define   MAXLPITER 1000
 #define   EPSILON   1.0
 #define   BIGVALUE  1.0e+13  
-                      //2140000000.0           //1.0e+11
 
 /* PROTOTYPES OF FUNCTIONS */
 
@@ -67,9 +62,6 @@ int heuristic(int improv)
     double     *oldval;
     double     obj;
 
-#ifdef STAMP
-    std::cout << "    .. heuristic .." << std::endl;
-#endif
     t1 = seconds();
 
 
@@ -106,46 +98,28 @@ int heuristic(int improv)
     }
 
 
-/*****       constructive part    *****/
+    /*****       constructive part    *****/
 
 
     if( Rncells>500 && Rnsums>500 && nprot_level>500 )
         JJlpiterlimit(MAXLPITER);
     
 
-#ifdef STAMP        
-        std::cout << " " << nprot_level << ":";
-#endif
-   
     for(k=0;k<nprot_level;k++){
         pro = prot_level + k;
-#ifdef STAMP        
-        if(k%1000==0) std::cout << " " << k;
-#endif        
         obj = protection_2level(pro->sen->var,pro->sense,pro->level,1);  // k==2 in problem subtable      
 
         if( obj+ZERO>=BIGVALUE ){
-#ifdef STAMP        
-            std::cout << "WARNING:   not enough cells in the initial maximal set, or infeasible" << std::endl;
-#endif
             weight = INF;
 	    nsup   = -1;
             goto SALIR;
         }
-#ifdef STAMP        
-//        if( obj>1-ZERO ){
-//            printf("WARNING: not enough cells in the initial potential set\n");
-//        }
-#endif
     }
-#ifdef STAMP        
-    std::cout << "\n:";
-#endif
     if( Rncells>500 && Rnsums>500 && nprot_level>500 )
         JJlpiterlimit(1000000);
 
     
-/*****       saving    *****/
+    /*****       saving    *****/
 
     sup = (VARIABLE **)malloc( Rncells * sizeof(VARIABLE *) );
     if(sup==NULL){            
@@ -161,17 +135,10 @@ int heuristic(int improv)
         }
     update_heuristic(weight,nsup,sup);
     free( (void*)sup );
-    //sup = NULL; /*PWOF*/
 
     if( !improv ) goto SALIR;
 
-#ifdef STAMP
-    t2 = seconds();
-    std::cout << "HEUR: weight=" << weight << " sup=" << nsup << " time = " << t2-t1 << std::endl;
-#endif
-
-
-/*****       clean-up part   *****/
+    /*****       clean-up part   *****/
 
     stack = (int *)malloc( Rncells * sizeof(int) );
     if( stack==NULL ){        
@@ -184,25 +151,12 @@ int heuristic(int improv)
 	/* this condition must be strengthened */
     potential_innecesary(&nstack,stack);
 
-//#ifdef STAMP
-//	printf("%d variables to be studied\n",nstack);
-//#endif
-
-
     for(l=0;l<nstack;l++){
-//#ifdef STAMP
-//    	printf(" studying variable = %d\n",stack[l]);
-//#endif
         remove_cell(stack[l],bd);
         for(k=0;k<nrows;k++)
             if( violated(rows[k]) > ZERO )
                 break;
         if( k<nrows ){
-
-//#ifdef STAMP
-//            printf("CLEAN-UP: variable %d needed because POOL\n",stack[l]);
-//#endif
-
             restore_cell(stack[l],bd);
         }else{
             for(k=0;k<nprot_level;k++){
@@ -211,9 +165,6 @@ int heuristic(int improv)
                     break;
             }
             if( k<nprot_level ){
-//#ifdef STAMP
-//                printf("CLEAN-UP: variable %d needed because Network-LP\n",stack[l]);
-//#endif
                 restore_cell(stack[l],bd);
             }
         }
@@ -222,7 +173,7 @@ int heuristic(int improv)
     stack = NULL; /*PWOF*/
     
 
-/*****       saving    *****/
+    /*****       saving    *****/
 
     sup = (VARIABLE **)malloc( Rncells * sizeof(VARIABLE *) );
     if(sup==NULL){            
@@ -238,10 +189,8 @@ int heuristic(int improv)
         }
     update_heuristic(weight,nsup,sup);
     free( (void*)sup );
-    //sup = NULL; /*PWOF*/
-
+    
 SALIR:
-
     unload_2network();
     for(k=0;k<Rncells;k++)
         columns[k].val = oldval[k];
@@ -250,21 +199,13 @@ SALIR:
 
     t2 = seconds();
     theur += t2-t1;
-#ifdef STAMP
-    std::cout << "HEUR: weight=" << weight << " sup=" << nsup << " time = " << t2-t1 << "  (nrows=" << nrows << ")" << std::endl;
-#endif
     bad_heuristic = 0;
     return(weight);
 }
 
 
 static void   update_heuristic(int weight,int nsup,VARIABLE      **sup)
-
 {
-#ifdef STAMP
-    int k,l;
-#endif
-
     if( weight >= upperb ) return;
 
     ubtype      = 'H';
@@ -272,28 +213,8 @@ static void   update_heuristic(int weight,int nsup,VARIABLE      **sup)
     topti       = seconds()-t0;
     nbetter     = nsup;
     while(nsup--) better[nsup] = sup[nsup];
-#ifdef STAMP    
-    write_heu(fheuristi);
-
-    for(k=0;k<Rncells;k++)
-        if(columns[k].sensitive){
-            for(l=0;l<nbetter;l++)
-                if( better[l]==columns+k) break;
-            if(l==nbetter){
-                std::cout << "ERROR: sensitive cell " << k << " not in heuristic" << std::endl;
-                CSPexit(EXIT_ERROR); //exit(1);
-            }
-        }
-#endif
     CSPnewsolution();
 }
-
-
-
-
-
-
-
 
 
 /*====================================================================*/
@@ -334,10 +255,7 @@ static void   load_2network(char *status)
         VARIABLE *var;
         struct   CELDA *c;
 
-/*
-        printf("\nNetwork with NR=%d and NC=%d cols ;",NR,NC);
-*/
-/* allocation memory */
+        /* allocation memory */
 
         macsz = 2*Rncells;
         marsz = Rnsums;
@@ -386,7 +304,7 @@ static void   load_2network(char *status)
                 CSPexit(EXIT_MEMO); //exit(1);
         }
 
-/* LP row construction */
+        /* LP row construction */
 
         for(i=0;i<Rnsums;i++) sum2net[i]=0;
         for(i=0;i<Rncells;i++)
@@ -405,7 +323,7 @@ static void   load_2network(char *status)
             } else
                 net2sum[i]   = -1;
 
-/* LP column construction */
+        /* LP column construction */
 
         mac = 0;
         l   = 0;
@@ -415,7 +333,6 @@ static void   load_2network(char *status)
                 net2cell[mac/2]  = i;
                 cell2net[i]      = mac/2;
                 Nobjx[mac]       = (var->val>EPSILON-ZERO ? 0.0 : (1-var->val) * var->weight +1);
-//                Nobjx[mac]       = (var->val>EPSILON-ZERO ? 0.0 : var->weight +1);
                 Nmatbeg[mac]     = l;
                 Nmatcnt[mac]     = 0;
                 for( c=var->next ; c ; c=c->next ){
@@ -431,7 +348,6 @@ static void   load_2network(char *status)
                 Nbdu[mac]      = var->uvalue;
                 mac++;
                 Nobjx[mac]     = (var->val>EPSILON-ZERO ? 0.0 : (1-var->val) * var->weight +1);
-//                Nobjx[mac]     = (var->val>EPSILON-ZERO ? 0.0 : var->weight +1);
                 Nmatbeg[mac]   = l;
                 Nmatcnt[mac]   = 0;
                 for( c=var->next ; c ; c=c->next ){
@@ -449,12 +365,6 @@ static void   load_2network(char *status)
             } else
                 cell2net[i]    = -1;
         }
-
-
-#ifdef STAMP
-        std::cout << "HEUR: mac=" << mac << "  mar=" << mar << "  (nrows=" << nrows << ")" << std::endl;
-#endif
-
 
 #ifdef CHECKLP
         l = JJcheckprob (Nprobname, mac, mar, 0, 1, Nobjx, Nrhsx,
@@ -479,14 +389,10 @@ static void   load_2network(char *status)
                 std::cout << "ERROR: There is not enought memory for the first LP" << std::endl;
                 CSPexit(EXIT_LPSOLVER); //exit(1);
         }
-#ifdef STAMP    
-        JJsetscr_ind(Nlp, 0);
-#endif
 
 #ifdef CHECKLP
         JJmpswrite(Nlp,fmpsnet);
 #endif
-////        JJlpwrite(Nlp,"sdcnet.lp");
 }
 
 /**
@@ -495,18 +401,7 @@ static void   load_2network(char *status)
 
 static void unload_2network()
 {
-#ifdef STAMP
-        JJsetscr_ind(Nlp, 0);
-#endif
         JJfreeprob(/*(void*)*/&Nlp);
-/*****
-		JJfreedata(NULL, Nobjx, Nrhsx,
-                       Nsenx, Nmatbeg, Nmatcnt, Nmatind, Nmatval,
-                       Nbdl , Nbdu , NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL, NULL);
-*****/
         free((void *)Nobjx);
         Nobjx = NULL; /*PWOF*/
         free((void *)Nrhsx);
@@ -548,7 +443,6 @@ static double    protection_2level(VARIABLE  *var,int type,double goal,int mode)
 
 {
     int       k,l,mac;
-    //int       netstatus,netnodes,netarcs,netiter,lpiter;
     int       netstatus,lpiter;
     double    opt;
     double    *x;
@@ -565,69 +459,28 @@ static double    protection_2level(VARIABLE  *var,int type,double goal,int mode)
     lu = 'L';         // Modified on september 2001, to allow protection leves > external bounds
     bd = goal;
     JJchgbds(Nlp,1,&index1,&lu,&bd);
-//    lu = 'U';
-//    bd = goal;
-//    JJchgbds(Nlp,1,&index1,&lu,&bd);
-//    lu = 'L';
-//    bd = 0.0;
-//    JJchgbds(Nlp,1,&index2,&lu,&bd);
     lu = 'U';
     bd = 0.0;
     JJchgbds(Nlp,1,&index2,&lu,&bd);
     
-/*
-    if ( JJnetopt(Nlp,&netstatus,&netnodes,&netarcs,&netiter) ){
-		if( netstatus==JJ_INForUNB ){
-			opt =INF;
-			goto FUERA;
-		}			
-
-        puts(" it was not possible to solve with NETOPT ");
-        JJlpwrite(Nlp,fsdcnetlp);
-        CSPexit(EXIT_LPSOLVER); //exit(1);
-    }
-
-
-    if( netstatus!=CPX_NETOPTIMAL || netnodes!=JJgetmar(Nlp) || netarcs!=JJgetmac(Nlp) ){
-        printf(" WARNING in sdcnet.c - netopt\n");
-        printf(" netstatus=%d netnodes=%d netarcs=%d netiter=%d mar=%d mac=%d\n",
-             netstatus,netnodes,netarcs,netiter,JJgetmar(Nlp),JJgetmac(Nlp));
-    }
-
-    printf(" netstatus=%d netnodes=%d netarcs=%d netiter=%d mar=%d mac=%d\n",
-             netstatus,netnodes,netarcs,netiter,JJgetmar(Nlp),JJgetmac(Nlp));
-    printf(" ... solving LP:stat=%d opt=%f tit=%d Iit=%d mac=%d mar=%d nz=%d\n",
-JJgetstat(Nlp),(float)opt,JJgetitc(Nlp),JJgetitci(Nlp),JJgetmac(Nlp),JJgetmar(Nlp),JJgetmat(Nlp));
-*/
     if ( JJoptimize(Nlp) ){
         netstatus = JJgetstat(Nlp);
-        //puts(" CELL=%s  type=%d  prot=%f (lpstat=%d)",var->name,type,goal,netstatus);
         std::cout << " CELL=" << var->name << "  type=" << type << "  prot= " << goal << " (lpstat=" << netstatus;
 		if( netstatus==JJ_INForUNB || netstatus==JJ_INFEASIBLE || netstatus==JJ_UNBOUNDED ){
             opt =INF;
 			goto FUERA;
 		}			
 
-        //puts(" it was not possible to solve with -optimize- (lpstat=%d)",netstatus);
         std::cout << " it was not possible to solve with -optimize- (lpstat=" << netstatus << ")";
         JJlpwrite(Nlp,fsdcnetlp);
         CSPexit(EXIT_LPSOLVER); //exit(1);
     }
 
-//    printf(" ... solving LP:stat=%d opt=%f tit=%d Iit=%d mac=%d mar=%d nz=%d\n",
-//JJgetstat(Nlp),(float)opt,JJgetitc(Nlp),JJgetitci(Nlp),JJgetmac(Nlp),JJgetmar(Nlp),JJgetmat(Nlp));
-
-//    printf(" ... solving LP:stat=%d opt=%f tit=%d Iit=%d mac=%d mar=%d nz=%d\n",
-//JJgetstat(Nlp),(float)opt,JJgetitc(Nlp),JJgetitci(Nlp),JJgetmac(Nlp),JJgetmar(Nlp),JJgetmat(Nlp));
     mac = JJgetmac(Nlp);
     netstatus = JJgetstat(Nlp);
     lpiter = JJgetitc(Nlp);
 
     if( netstatus != JJ_OPTIMAL && netstatus != 5/*11*/ && lpiter != MAXLPITER ){  //changed by Salome 08/02/12
-
-#ifdef STAMP        
-        std::cout << "WARNING: network stat=" << JJgetstat(Nlp) << std::endl;
-#endif
         opt = BIGVALUE;
     } else {
         JJgetobjval(Nlp,&opt);
@@ -664,16 +517,6 @@ FUERA:
         bd = var->lvalue;
     JJchgbds(Nlp,1,&index2,&lu,&bd);
 
-//    lu = 'L';
-//    bd = 0.0;
-//    JJchgbds(Nlp,1,&index2,&lu,&bd);
-//    lu = 'U';
-//    if( type < 0 )
-//        bd = var->lvalue;
-//    else 
-//        bd = var->uvalue;
-//    JJchgbds(Nlp,1,&index1,&lu,&bd);
-
     return(opt);
 }
 
@@ -686,12 +529,7 @@ static void remove_cell(int index,double *bd)
     int    ind[2];
     char   lu[2] = {'B','B'};
     double value[2] = {0.0,0.0};
-#ifdef STAMP
-    if(cell2net[index] == -1){
-        std::cout << "ERROR: variable " << index << " not in the NLP" << std::endl;
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-#endif
+
     columns[index].val = 0.0;
     j = 2* cell2net[index];
     JJgetbdl(Nlp,bd,j,j+1);
@@ -707,12 +545,6 @@ static void restore_cell(int index,double *bd)
     int j;
     int ind[4];
     char lu[4] = {'L','L','U','U'};
-#ifdef STAMP
-    if(cell2net[index] == -1){
-        std::cout << "ERROR: variable " << index << " not in the NLP" << std::endl;
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-#endif
     columns[index].val = 1.0;
     j = 2* cell2net[index];
     ind[0] = ind[2] = j;
@@ -769,11 +601,6 @@ static void potential_innecesary(int    *nlist,int    *list)
     for(l=0;l<nrows;l++)
         if( rnumber[l]==1 ){
             status[rvar[l]->index]=1;
-/*
-#ifdef STAMP
-            printf("CLEAN-UP: variable %d not need to be considered\n",l);
-#endif
-*/
         }
     free(rvar);
     rvar = NULL; /*PWOF*/
@@ -788,10 +615,5 @@ static void potential_innecesary(int    *nlist,int    *list)
     status = NULL; /*PWOF*/
 
 
-    //qsort( (char *)list , *nlist , sizeof(int *) , sort_cells );
-    //qsort( (char *)list , *nlist , sizeof(int) , sort_cells ); // list consists of int, not int*
     qsort( (void *)list , *nlist , sizeof(int) , sort_cells );
 }
-
-
-

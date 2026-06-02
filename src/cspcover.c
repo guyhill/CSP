@@ -45,9 +45,6 @@ int        separa_cover(int *card,CONSTRAINT **stack)
     CONSTRAINT *con;
     
     if( *card ==MAX_CUTS_ITER) return(0);
-#ifdef STAMP
-    std::cout << "    .. cover cuts .. ";
-#endif
     i = nrows;
     while(i--)
         if(rows[i]->type == CAPACITY && rows[i]->rhs > 1+ZERO){
@@ -60,9 +57,6 @@ int        separa_cover(int *card,CONSTRAINT **stack)
                 remove_row( con );
         }
     ccove += num;
-#ifdef STAMP
-    std::cout << num << std::endl;
-#endif
     return(num);
 }
 
@@ -210,14 +204,12 @@ static CONSTRAINT *cover_constraint(CONSTRAINT *con)
         new_stack[ new_card++ ] = item[0].var;
     }
 
-    //free((void *)item );
     free(item);
     item = NULL; /*PWOF*/
 
     if ( profit < profit0-ZERO ){
         ext = cover_extension( &new_card , new_stack , con , &viola , &viola0 );
         if( viola > viola0 ){
-            //stack = (VARIABLE **)malloc( new_card * sizeof(ITEM) );
             stack = (VARIABLE **)malloc( new_card * sizeof(VARIABLE *) ); /*PWOF*/
             for(j=0;j<new_card;j++)
                 stack[j] = new_stack[j];
@@ -234,7 +226,6 @@ static CONSTRAINT *cover_constraint(CONSTRAINT *con)
             inequality->con    = con;
         }
     }
-    //free((void *)new_stack);
     free(new_stack);
     new_stack = NULL; /*PWOF*/
 
@@ -267,23 +258,12 @@ static double kp(int N,double *P,double *W,double C,int    *X)
         else if( W[j]<0.0 ) W[j]=0.0;
     }  
     test = 0;
-//#ifdef STAMP
-    //test = 1;
-//#endif        
     MT1RC(N,P-1,W-1,C,0.0001,&z,X-1,dim,test,
         INT,FLOAT,FLOAT+dim,FLOAT+(2*dim),INT+dim,FLOAT+(3*dim),FLOAT+(4*dim));
     free((void *)INT);
     INT = NULL; /*PWOF*/
     free((void *)FLOAT);
     FLOAT = NULL; /*PWOF*/
-#ifdef STAMP
-    if(z<ZERO){
-       std::cout << "ERROR: constraint " << (int)(-z) << " of Knapsack routine." << std::endl;
-       std::cout << " c=" << C << std::endl;
-       for(j=0;j<N;j++)
-           if(P[j]<0 || W[j]<0) std::cout << " p(" << j << ")=" << P[j] << "  w(" << j << ")=" << W[j] << std::endl;
-    }
-#endif
     return(z);
 }
 
@@ -431,24 +411,6 @@ double     violation_cover(CONSTRAINT *con)
     return( viola );
 }
 
-/*
-print_cover(con)
-CONSTRAINT *con;
-{
-    int card;
-    VARIABLE **stack;
-
-    if( con->type != COVER ) return;
-
-    printf(" Cover [hash=%ld]: ",con->hash);
-    print_col( columns + con->index );
-    card = con->card;
-    stack = con->stack;
-    while(card--) print_col(stack[card]);
-    printf("\n");
-    print_row(con);
-}
-*/
 
 double     get_coeficient_cover(VARIABLE   *col,CONSTRAINT *con)
 
@@ -460,4 +422,3 @@ double     get_coeficient_cover(VARIABLE   *col,CONSTRAINT *con)
         if( col==con->stack[i] ) return(0);
     return(1);
 }
-

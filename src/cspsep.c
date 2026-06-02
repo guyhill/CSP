@@ -60,11 +60,6 @@ void       separa(int        *card,CONSTRAINT **stack)
 
     if( *card ) return;
 
-
-/**
-    if( (branchs || iterations>50) && !integrability() ) return;
-**/
-
     separa_capacity(card,stack);
 
 #ifdef PARTIAL    
@@ -83,36 +78,13 @@ void       separa(int        *card,CONSTRAINT **stack)
     for(l=k=0;k<nsupport;k++)
         if( support[k]->sensitive == 0 ) l++;
     std::cout << " partial solution: sup=" << l << "  loss=" << lowerb << " (rounded=" << range << ") time=" << seconds()-t0 << std::endl;
-/**
-    for(k=0;k<nrows;k++)
-      if( violated(rows[k])>MIN_VIOLA )
-            printf("%ld\n",violated(rows[k]) );
-    printf(" partial solution\n");
-    CSPpartialbounds();
-**/
     CSPexit(EXIT_ERROR); //exit(1);
 #endif
 
     if( *card ==0 && integrability() ) return;
 
     separa_bridge(card,stack);
-/*
-    if( *card ) {
-        if( bad_heuristic ) heuristic();
-        return;
-    }
-*/
     separa_cover(card,stack);
-/**
-    if( *card ) {
-        if( bad_heuristic ) heuristic(1);
-        return;
-    }
-**/
-/***    
-    if( branchs==0 )
-        separa_gomory(card,stack);
-***/
 }
 
 double     violated(CONSTRAINT *con)
@@ -148,9 +120,6 @@ static int separa_pool(int *card,CONSTRAINT **stack)
     CONSTRAINT *con;
 
     if( *card ==MAX_CUTS_ITER) return(0);
-#ifdef STAMP
-    std::cout << "    .. pool (nrows=" << nrows << ").. ";
-#endif
     num = 0;
     for(k=0;k<nrows;k++){
         con = rows[k];
@@ -162,9 +131,6 @@ static int separa_pool(int *card,CONSTRAINT **stack)
         }
     }
     cpool += num;
-#ifdef STAMP
-    std::cout << num << std::endl;
-#endif
     return(num);
 }
 
@@ -216,22 +182,6 @@ int new_row(CONSTRAINT *con)
 
 {
     con->hash = hash( con );
-/**
-    if( valid(con)==0 ){
-        puts("ERROR: not valid inequlaity");
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-**/
-#ifdef STAMP
-
-    if( violated(con)<ZERO ){
-        std::cout << "WARNING: not violated inequality (probably because numerical precision) vio=" << violated(con) << std::endl;
-    }
-    if( violated(con)<MIN_VIOLA ){
-        std::cout << "WARNING: not violated inequality vio=" << violated(con) << std::endl;
-    }
-
-#endif
 
     if( pool_row( con ) < 0 ){
         rows[ nrows++ ] = con;
@@ -273,17 +223,9 @@ static     int iden_rows(CONSTRAINT * con1 ,CONSTRAINT * con2 )
     coef2=NULL;
     card1=0;
     card2=0;
-    //
-    
+
     if( con1->hash != con2->hash ) return(0);
 
-////////#ifndef STAMP
-////////    return(1);
-////////#endif
-/***
-    printf(" WARNING: identical rows! ");
-    return(1);
-***/
     switch( con1->type ){
     case CAPACITY:
     case BRIDGE:
@@ -294,7 +236,6 @@ static     int iden_rows(CONSTRAINT * con1 ,CONSTRAINT * con2 )
         card1  = con1->card;
         break;
     case COVER:
-        //stack1 = (VARIABLE **)malloc( ncols*sizeof(int) );
         stack1 = (VARIABLE **)malloc( ncols*sizeof(VARIABLE *) ); /*PWOF*/
         coef1  = (double *)malloc( ncols*sizeof(double) );
         card1  = extend_cover(con1,stack1,coef1);
@@ -314,7 +255,6 @@ static     int iden_rows(CONSTRAINT * con1 ,CONSTRAINT * con2 )
         card2  = con2->card;
         break;
     case COVER:
-        //stack2 = (VARIABLE **)malloc( ncols*sizeof(int) );
         stack2 = (VARIABLE **)malloc( ncols*sizeof(VARIABLE *) ); /*PWOF*/
         coef2  = (double *)malloc( ncols*sizeof(double) );
         card2  = extend_cover(con2,stack2,coef2);
@@ -325,13 +265,6 @@ static     int iden_rows(CONSTRAINT * con1 ,CONSTRAINT * con2 )
     }
         
     identical = enumeration(card1,con1->rhs,stack1,coef1,card2,con2->rhs,stack2,coef2);
-#ifdef STAMP
-    if( identical == 0 )
-        std::cout << "WARNING: COLISION"  << std::endl;
-    else if(con1->type != con2->type)
-        std::cout << "WARNING: identical rows of type " << con1->type << " and " << con2->type << std::endl;
-#endif
-
 
     switch( con1->type ){
     case CAPACITY:
@@ -366,15 +299,6 @@ static     int iden_rows(CONSTRAINT * con1 ,CONSTRAINT * con2 )
         std::cout << "ERROR: unknown type " << con2->type << " of constraint" << std::endl;
         CSPexit(EXIT_ERROR); //exit(1);
     }
-/**
-    if(identical==0) {
-        printf(" [colision] ");
-        print_row(con1);
-        print_row(con2);
-    } else {
-        printf(" (identical) ");
-    }
-**/
     return(identical);
 }
 
@@ -453,9 +377,6 @@ static int tailingoff()
     lbound[0] = lowerb;
     ntail++;
     if( ntail>NTAIL && lbound[0] < lbound[NTAIL-1]+ETAIL ) {
-#ifdef STAMP    
-        std::cout << " tailing off detected " << std::endl;
-#endif
         if( integrability() )return(0);
         for(i=1;i<NTAIL;i++)
             if( lbound[i-1]>lbound[i]+ETAIL ) return(0);

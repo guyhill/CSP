@@ -111,9 +111,6 @@ int    protected1(double *status)
     sleep = NULL; /*PWOF*/
     unload_network();
     if(l<0) return(1);
-#ifdef STAMP    
-    std::cout << " violated protection level " << l << std::endl;
-#endif
     return(0);
 }
 
@@ -131,17 +128,13 @@ void   load_network(double *status,char type)
         VARIABLE *var;
         struct   CELDA *c;
 
-/*
-        printf("\nNetwork with NR=%d and NC=%d cols ;",NR,NC);
-*/
-
 #ifdef PARTIAL
         for(i=0;i<Rncells;i++)
             if(columns[i].sensitive && status[i]<ZERO) status[i]=2*ZERO;
 #endif
 
 
-/* allocation memory */
+        /* allocation memory */
 
         macsz = Rncells;
         marsz = Rnsums;
@@ -198,7 +191,7 @@ void   load_network(double *status,char type)
             }
 		}
 
-/* LP row construction */
+    /* LP row construction */
 
         for(i=0;i<Rnsums;i++) sum2net[i]=0;
         for(i=0;i<Rncells;i++)
@@ -217,7 +210,7 @@ void   load_network(double *status,char type)
             } else
                 sum2net[i] = -1;
 
-/* LP column construction */
+    /* LP column construction */
 
         mac = 0;
         l   = 0;
@@ -249,8 +242,6 @@ void   load_network(double *status,char type)
             }
         }
 
-       //printf("  mac=%d   mar=%d  ",mac,mar);
-
        /* LP loading */
 
 
@@ -277,9 +268,6 @@ void   load_network(double *status,char type)
                 std::cout << "ERROR: There is not enough memory for the first LP" << std::endl;
                 CSPexit(EXIT_LPSOLVER); //exit(1);
         }
-#ifdef STAMP    
-        JJsetscr_ind(Nlp,0);
-#endif
         if( type == 'I'){
 			for(i=0;i<mac;i++)
 				Nxctype[i] = 'I';
@@ -300,18 +288,7 @@ void   load_network(double *status,char type)
 
 void unload_network()
 {
-#ifdef STAMP    
-        JJsetscr_ind(Nlp, 0);
-#endif
-        JJfreeprob(/*(void*)*/&Nlp);
-		/*****
-		JJfreedata(NULL, Nobjx, Nrhsx,
-                       Nsenx, Nmatbeg, Nmatcnt, Nmatind, Nmatval,
-                       Nbdl , Nbdu , NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL, NULL);
-*****/
+        JJfreeprob(&Nlp);
         free((void *)Nobjx);
         Nobjx = NULL; /*PWOF*/
         free((void *)Nrhsx);
@@ -485,34 +462,15 @@ double    protection_level(VARIABLE *var,int goal,int *nvar,VARIABLE **lvar,doub
         CSPexit(EXIT_LPSOLVER); //exit(1);
     }
     
-/*
-    if( netstatus!=CPX_NETOPTIMAL || netnodes!=JJgetmar(Nlp) || netarcs!=JJgetmac(Nlp) ){
-        printf(" WARNING in sdcnet.c - netopt\n");
-        printf(" netstatus=%d netnodes=%d netarcs=%d netiter=%d mar=%d mac=%d\n",
-             netstatus,netnodes,netarcs,netiter,JJgetmar(Nlp),JJgetmac(Nlp));
-    }
-*/
     if ( JJdualopt(Nlp) ){        
         std::cout << " it was not possible to solve with dualopt " << std::endl;
         JJlpwrite(Nlp,netlpname);
         CSPexit(EXIT_LPSOLVER); //exit(1);
     }
 
-#ifdef STAMP
-    k = JJgetstat(Nlp);
-    if( k!=JJ_OPTIMAL && k!=5/*11*/ ){  // changed by Salome 08/02/12
-        std::cout << "ERROR: attacker problem with CPX status = " << k  << std::endl;
-        JJlpwrite(Nlp,netlpname);
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-#endif    
     mar = JJgetmar(Nlp);    // Number of rows (constraints)
     mac = JJgetmac(Nlp);    // Number de colums (variable)
     JJgetobjval(Nlp,&opt);  // Value of obj. solution (opt)
-/*
-    printf(" ... solving LP:stat=%d opt=%f tit=%d Iit=%d mac=%d mar=%d nz=%d\n",
-JJgetstat(Nlp),(float)opt,JJgetitc(Nlp),JJgetitci(Nlp),JJgetmac(Nlp),JJgetmar(Nlp),JJgetmat(Nlp));
-*/
 
     if(nvar){
         cost = (double *)malloc(sizeof(double)*Rncells);
@@ -590,12 +548,6 @@ void free_col(int index,double *bd)
     int    ind[2];
     char   lu[2] = {'L','U'};
     double value[2];
-#ifdef STAMP
-    if(cell2net[index] == -1){
-        std::cout << "ERROR: variable " << index << " not in the NLP" << std::endl;
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-#endif
     j = cell2net[index];
     JJgetbdl(Nlp,bd,j,j);
     JJgetbdu(Nlp,bd+1,j,j);
@@ -624,13 +576,6 @@ void unfree_col(int index,double *bd)
 {
     int ind[2];
     char lu[2] = {'L','U'};
-#ifdef STAMP
-    if(cell2net[index] == -1){
-        std::cout << "ERROR: variable " << index << " not in the NLP" << std::endl;
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-#endif
     ind[0] = ind[1] = cell2net[index];
     JJchgbds(Nlp,2,ind,lu,bd);
 }
-

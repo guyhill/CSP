@@ -57,9 +57,6 @@ int        separa_gomory(int        *card,CONSTRAINT **stack)
     static int set_gomory = 1;
 
     if( *card ==MAX_CUTS_ITER) return(0);
-#ifdef STAMP
-    std::cout << "    .. gomory cuts .. " << std::endl;
-#endif
     if( set_gomory%RE_GOMORY ) {
         set_gomory++;
         return(0);
@@ -134,9 +131,6 @@ int        separa_gomory(int        *card,CONSTRAINT **stack)
     rb = NULL; /*PWOF*/
     free((void *)ri);
     ri = NULL; /*PWOF*/
-#ifdef STAMP
-    std::cout << " " << cont << " tried / " << *card << " considered" << std::endl;
-#endif
     cgomo += *card;
     return( *card );
 }
@@ -153,14 +147,6 @@ static int chvatal(int k,double *rb,CONSTRAINT **con,int *card,CONSTRAINT **stac
     CONSTRAINT *row;
     double     vio;
 
-/**
-    printf("\n*** Chvatal :");
-    for(j=0;j<k;j++) {
-        printf(" %f [%d] (vio=%f)\n",(float)rb[j],con[j]->type,(float)violated(con[j]));
-        print_row(con[j]);
-    }
-**/
-
     ra=(double *)calloc( (size_t)ncols,sizeof(double) );
     if(ra==NULL){        
         std::cout << "There is not enough memory for RA" << std::endl;
@@ -174,9 +160,6 @@ static int chvatal(int k,double *rb,CONSTRAINT **con,int *card,CONSTRAINT **stac
             return(0);
         }
 
-//    control_gomory( number , ra , rhs );
-
-    
     maxcoef = 0;
     v = 0;
     for( j=0 ; j<ncols ; j++ ){
@@ -197,17 +180,11 @@ static int chvatal(int k,double *rb,CONSTRAINT **con,int *card,CONSTRAINT **stac
         if( coef>maxcoef ) maxcoef = coef;
     }
     if( v==0 ){
-#ifdef STAMP
-        std::cout << "WARNING: null LHS in Chvatal , RHS=" << (float)rhs << std::endl;
-#endif
         free( (void *)ra );
         ra = NULL; /*PWOF*/
         return(0);
     }
     if( v>MAX_DEN_GOMORY || maxcoef>MAX_COEF_GOMORY ){
-#ifdef STAMP
-        std::cout << "Any more: density=" << v << " (>" << MAX_DEN_GOMORY << ") coef=" << maxcoef << " (>" << MAX_COEF_GOMORY << ")" << std::endl;
-#endif
         return(-2);
     }
 
@@ -303,20 +280,8 @@ static int chvatal(int k,double *rb,CONSTRAINT **con,int *card,CONSTRAINT **stac
     free( (void *)ri );
     ri = NULL; /*PWOF*/
 
-  /*  print_row( row ); */
-
-/***************
-        free( row->stack );
-        free( row->coef );
-        free( row );
-        return(0);
-***************/
-
     vio = violated( row );
     if( fabs( vio - viola ) > ZERO ){
-#ifdef STAMP    
-        std::cout << "ERROR in Chvatal: initial violation=" << viola << "  final violation=" << vio << std::endl;
-#endif
         free( (void *)(row->stack) );
         row->stack = NULL; /*PWOF*/
         free( (void *)(row->coef) );
@@ -326,9 +291,6 @@ static int chvatal(int k,double *rb,CONSTRAINT **con,int *card,CONSTRAINT **stac
         return(0);
     }
     if( vio<MIN_VIOLA ){
-#ifdef STAMP    
-        std::cout << "ERROR: Chvatal-cut not violated ; vio=" << (float)vio << " card=" << v << std::endl;
-#endif
         free( (void *)(row->stack) );
         row->stack = NULL; /*PWOF*/
         free( (void *)(row->coef) );
@@ -337,16 +299,6 @@ static int chvatal(int k,double *rb,CONSTRAINT **con,int *card,CONSTRAINT **stac
         row = NULL; /*PWOF*/
         return(0);
     }
-
-/*
-    printf("\n*** Chvatal :");
-    for(j=0;j<k;j++) {
-        printf(" %f [%d] (vio=%f)\n",(float)rb[j],con[j]->type,(float)violated(con[j]));
-        print_row(con[j]);
-    }
-    print_row( row );
-*/
-
 
     if( new_row( row ) ){
         stack[ (*card)++ ] = row;
@@ -389,16 +341,11 @@ static      int adding(CONSTRAINT  *con,double rb,double      *ra,double      *r
     
 
     if( con->sense != 'G' ){
-#ifdef STAMP    
-         std::cout << " Gomory not prepared for combining a non >= ineq." << std::endl;
-         std::cout << " sense=" << con->sense << "  rhs=" << con->rhs << "  type=" << con->type << std::endl;
-#endif
          return(1);
     }
 
     switch( con->type ){
     case COVER:
-        //stack = (VARIABLE **)malloc( ncols*sizeof(int) );
         stack = (VARIABLE **)malloc( ncols*sizeof(VARIABLE *) ); /*PWOF*/
         coef  = (double *)malloc( ncols*sizeof(double) );
         card  = extend_cover(con,stack,coef);
@@ -411,9 +358,6 @@ static      int adding(CONSTRAINT  *con,double rb,double      *ra,double      *r
         card  = con->card;
         break;
     default:
-#ifdef STAMP    
-        std::cout << "ERROR: unknown type " << con->type << " of constraint" << std::endl;
-#endif
         return(1);
     }
 
@@ -438,9 +382,6 @@ static      int adding(CONSTRAINT  *con,double rb,double      *ra,double      *r
     case GOMORY:
         break;
     default:
-#ifdef STAMP    
-        std::cout << "ERROR: unknown type " << con->type << " of constraint" << std::endl;
-#endif
         return(1);
     }
 
@@ -473,40 +414,6 @@ double     violation_gomory(CONSTRAINT *con,int n,VARIABLE   **var)
 }
 
     
-/**************
-control_head()
-{
-    int    i,j,nzcnt,cmatbeg,surplus;
-    int    cmatind[1000],head[1000],cstat[1000],rstat[1000];
-    double cmatval[1000],xhead[1000],xbase[1000],rb[1000],ry[1000];
-    
-    JJgetbase(lp,cstat,rstat);
-    JJgetrhs(lp,ry,0,mar-1);
-    for(i=0;i<mac;i++){
-        if( cstat[i] == 2 ){
-            printf(" {%d}",i);
-            JJgetcols(lp, &nzcnt, &cmatbeg, cmatind, cmatval, 1000,
-                    &surplus,i,i);
-            for(j=0;j<nzcnt;j++)
-                ry[cmatind[j]] -= cmatval[j];            
-        }
-    }
-
-    for(i=0;i<mar;i++){
-        xbase[i] = 0;
-        JJbinvrow( lp, i, rb);
-        for(j=0;j<mar;j++)
-            xbase[i] += rb[j]*ry[j];
-    }
-
-    JJgetbhead( lp, head, xhead );
-
-    for(i=0;i<mar;i++)
-        printf(" head=%d  xhead=%lf   xbase=%lf\n",head[i],xhead[i],xbase[i]);
-    return(1);
-}
-********/
-
 void control_gomory(int  i ,double * ra , double rhs )
 
 {
@@ -534,5 +441,3 @@ double     get_coeficient_gomory(VARIABLE   *col,CONSTRAINT *con)
 }
 
 #endif
-
-

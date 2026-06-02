@@ -46,9 +46,6 @@ int        separa_bridge(int        *card,CONSTRAINT **stack)
     char      *sleep;
 
     if( *card ==MAX_CUTS_ITER) return(0);
-#ifdef STAMP
-    std::cout << "    .. bridge-less cuts .. ";
-#endif
 
     cvar    = (double *)malloc( Rncells * sizeof(double) );
     cvar1   = (double *)malloc( Rncells * sizeof(double) );
@@ -117,9 +114,6 @@ int        separa_bridge(int        *card,CONSTRAINT **stack)
     free(cvar2);
     cvar2 = NULL; /*PWOF*/
     cbrid += num;
-#ifdef STAMP
-    std::cout << num << std::endl;
-#endif
     return( num );
 }
 
@@ -154,14 +148,6 @@ static    CONSTRAINT *bridge_constraint(int nvar,VARIABLE  **xvar,int index)
             c[k] = 1.0;
         }
             
-#ifdef STAMP
-        for(k=0;k<nvar;k++){
-            if(xvar[k]->index == index){                
-                std::cout << "ERROR in bridge-less constraint: variable duplicated" << std::endl;
-                CSPexit(EXIT_ERROR); //exit(1);
-            }
-        }
-#endif
         x[nvar] = columns+index;
         c[nvar] = -1.0;
    
@@ -240,4 +226,3 @@ static    double bridge_lhs(int nvar1,int nvar2,VARIABLE  **xvar1,VARIABLE  **xv
     *nvar = k;
     return value;
 }
-

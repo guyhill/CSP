@@ -134,45 +134,24 @@ int control_ind()
 {
     int i,lpt,stat;
     double val;
-/*
-    printf(" :::: control mac=%d mar=%d\n",mac,mar);
-*/
     for(i=0;i<ncols;i++){
         stat = columns[i].stat;
         lpt  = columns[i].lp;
         val  = columns[i].val;
         switch( stat ){
             case WAITING:
-/**
-                 if( lpt != -1 ){
-                     printf("ERROR 1c: var=%d  with stat=%d lp=%d\n",i,stat,lpt);
-                     return(1);
-                 }
-**/
                  if( val>ZERO ){
                      std::cout << "ERROR 1c: var=" << i << " with stat=" << stat << " val=" << val << std::endl;
                      return(1);
                  }
                  break;
             case FIX_LB:
-/**
-                 if( lpt != -1 ){
-                     printf("ERROR 1a: var=%d  with stat=%d lp=%d\n",i,stat,lpt);
-                     return(1);
-                 }
-**/
                  if( val>ZERO ){
                      std::cout << "ERROR 1b: var=" << i << " with stat=" << stat << " val=" << val << std::endl;
                      return(1);
                  }
                  break;
             case FIX_UB:
-/**
-                 if( lpt != -1 ){
-                     printf("ERROR 1c: var=%d  with stat=%d lp=%d\n",i,stat,lpt);
-                     return(1);
-                 }
-**/
                  if( val<1-ZERO ){
                      std::cout << "ERROR 1d: var=" << i << " with stat=" << stat << " val=" << val << std::endl;
                      return(1);
@@ -311,7 +290,6 @@ int print_col(VARIABLE *var)
 
 {
     if(var==NULL) return(1);
-//    printf(" {%d,%lf}",var->index,var->val);
     std::cout << var->name;
     return(0);
 }

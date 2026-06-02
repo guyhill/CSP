@@ -48,7 +48,6 @@ int preprocessing()
     clean_prot_level();
     if( nprot_level==0 ) return 0 ;
 
-    //qsort( (char *)prot_level , nprot_level , sizeof(PROT_LEVEL) , sort_pl );
     qsort( (void *)prot_level , nprot_level , sizeof(PROT_LEVEL) , sort_pl );
 
     cvar = (double *)malloc( Rncells * sizeof(double) );
@@ -61,17 +60,10 @@ int preprocessing()
     for(k=0;k<nsensitive;k++) primal[ sensitive[k].var->index ]=sensitive[k].var->val;
     load_network(primal,'C');
 
-#ifdef STAMP
-    std::cout << "Preprocessing: " << nprot_level << ":";
-#endif
-
     l = nprot_level;
     while(l--){
         pro = prot_level+l;
         if( pro->level>ZERO && pro->study ){
-#ifdef STAMP
-            if(l%1000==0) std::cout << " " << l;
-#endif
             if( protection_level(pro->sen->var,pro->sense,&nvar,xvar,cvar,primal,'C') < pro->sense * pro->sen->var->nominal + pro->level-ZERO ){
 
                 if( nvar==0 ) break;
@@ -106,9 +98,6 @@ int preprocessing()
     free(xvar);
     xvar = NULL; /*PWOF*/
     unload_network();
-#ifdef STAMP
-    std::cout << "\n";
-#endif
 
     if( l != -1 ) return (-l-1);              /* not feasible sol. exits */
     
@@ -124,12 +113,6 @@ int preprocessing()
         else if( upl>ZERO ) l0u1++;
         else l0u0++;
     }
-#ifdef STAMP
-    std::cout << " lpl>0 && upl>0  ==  " << l1u1 << std::endl;
-    std::cout << " lpl>0 && upl=0  ==  " << l1u0 << std::endl;
-    std::cout << " lpl=0 && upl>0  ==  " << l0u1 << std::endl;
-    std::cout << " lpl=0 && upl=0  ==  " << l0u0 << std::endl;
-#endif
     return(l1u1+l1u0+l0u1);
 }
 
@@ -161,4 +144,3 @@ static void clean_prot_level()
             nprot_level--;
         }
 }
-        

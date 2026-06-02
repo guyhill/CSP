@@ -30,10 +30,6 @@
 #include "cspback.h"
 #include "my_time.h"
 
-#ifdef STAMP
-static void control_pricing(void);
-#endif
-
 /*  PRIVATE GLOBAL VARIABLES */
 
 float   tpricing = 0.0;
@@ -59,28 +55,7 @@ int pricing(int cleaning)
     anterior = (struct PRICE*) malloc(sizeof(struct PRICE)); // PWOF added
     
     if( list_pricing==NULL ) return(0);
-/*
-    if( mac+npricing < MAX_COLS_LP ){
-        add_cols_all();
-        return(1);
-    }
-*/
     t1 = seconds();
-#ifdef STAMP
-    for( p=list_pricing,card=0 ; p ; p=p->next,card++ )
-        if( p->col->stat != WAITING ){
-            std::cout << "ERROR: not waiting columns in LIST PRIcing"  << std::endl;
-            CSPexit(EXIT_ERROR); //exit(1);
-        }
-    std::cout << "  << pricing " << card << "(=" << npricing << ") variables>>" << std::endl;
-    if( card!=npricing ){
-        std::cout << "ERROR: different numbers of pricing variables"  << std::endl ;
-/*
-        CSPexit(EXIT_ERROR); //exit(1);
-*/
-    }
-    control_pricing();
-#endif
     u=(double *)malloc(sizeof(double)*mar);
     if(u==NULL){	
         std::cout << "Not enough memory for U" << std::endl;
@@ -142,51 +117,6 @@ int pricing(int cleaning)
 }
 
 
-
-#ifdef STAMP
-static void control_pricing()
-{
-    int      i,k;
-    double   *u,*dj;
-    double   redcost;
-    VARIABLE *col;
-
-    control();
-    dj=(double *)malloc(sizeof(double)*mac);
-    if(dj==NULL){	
-        std::cout << "Not enough memory for DJ" << std::endl;
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    u=(double *)malloc(sizeof(double)*mar);
-    if(u==NULL){	
-        std::cout << "Not enough memory for U" << std::endl;
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    for(k=0;k<mar;k++)
-        if( u[k]< -ZERO ){	    
-            std::cout << "ERROR: negative dual variable in row " << k << std::endl;
-            CSPexit(EXIT_ERROR); //exit(1);
-        }
-    dualcost(u,dj);
-    for( k=1;k<mac;k++ ){
-        col = cind[k];
-        redcost = col->weight;
-        for(i=1;i<mar;i++)
-            if( u[i]>ZERO )
-                redcost -= get_coeficient(col,rind[i]) * u[i];
-        if( fabs(dj[col->lp]-redcost) > ZERO ) {	    
-            std::cout << "\n ERROR pricing the variable k=" << col->index << " v=" << col->lp << std::endl;
-            CSPexit(EXIT_ERROR); //exit(1);
-        }
-    }
-    free((char *)dj);
-    dj = NULL; /*PWOF*/
-    free((char *)u);
-    u = NULL; /*PWOF*/
-}
-#endif
-
-
 double     get_coeficient(VARIABLE   *col,CONSTRAINT *con)
 
 {
@@ -224,5 +154,3 @@ void insert_list_pricing(VARIABLE *col)
     list_pricing = p;
     npricing ++;
 }
-
-        

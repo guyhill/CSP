@@ -72,10 +72,6 @@ int unload_branch_tree()
 {
     struct BRANCH  *ptr;
 
-#ifdef STAMP
-    if( tree ) std::cout << "ERROR: the branch-decision tree is not empty " << std::endl;
-#endif
-
     while(tree){
         ptr    = tree->next;
         free(tree);
@@ -163,9 +159,6 @@ int read_prob()
         free(tree);
         tree   = ptr;
     }while( ceil(lowerb-ZERO)+ZERO > upperb );
-#ifdef STAMP
-    std::cout << "  >>>>>>>>>>>>> reading problem " << (float)lowerb << std::endl;
-#endif
     pfile = fopen(fbranch,"r");
     if(pfile==NULL){          
           std::cout << "ERROR: not possible to write on " << fbranch << std::endl;
@@ -212,11 +205,6 @@ int var_branching()
     VARIABLE *col;
     double   old_lowerb = lowerb;
 
-#ifdef STAMP
-    std::cout << "  >>>>>>>>>>>>> var branching " << std::endl;
-    if(branchs==0) write_sol(fsolution);
-#endif
-
     if( upperb-ZERO < ceil(lowerb-ZERO) )
         return(1);
     col = variable_branching(BETTERLP);
@@ -224,18 +212,15 @@ int var_branching()
         return(1);
     if(col==NULL)
         return(0);
-#ifdef STAMP
-    std::cout << branchs << " on variable " << col->index << "=" << col->val << std::endl;
-#endif
     branchs++;
-/* making the left child */
+    /* making the left child */
 
     if( ceil( solve_child_col( col , (double)0 , 1)-ZERO) < upperb-ZERO ) {
         col->stat = FIX_LB;
         write_prob();
     }
 
-/* making the left child */
+    /* making the left child */
 
     if( ceil( solve_child_col( col , (double)1 , 1)-ZERO) < upperb-ZERO ) {
         col->stat = FIX_UB;
@@ -287,7 +272,6 @@ static VARIABLE *variable_branching(int type)
         for(k=0;k<nsupport;k++)
             if( fabs( support[k]->val - 0.5 ) < FRAC-ZERO )
                 stack[card++] = support[k];
-        //qsort( (char *)stack , card , sizeof(VARIABLE *) , sort_var );
         qsort( (void *)stack , card , sizeof(VARIABLE *) , sort_var );
 
         if(card > NUMB) card = NUMB;
@@ -356,34 +340,15 @@ int con_branching()
     CONSTRAINT *row0,*row1;
     double     old_lowerb = lowerb;
 
-
-#ifdef STAMP
-    std::cout << "  >>>>>>>>>>>>> constraint branching " << std::endl;
-    if(branchs==0) write_sol(fsolution);
-#endif
-
     if( upperb < ceil(lowerb-ZERO)+ZERO ) return(1);
-////    constraint_branching(nbetter,better,&row0,&row1);
     constraint_branching(nsupport,support,&row0,&row1);
     if( upperb < ceil(lowerb-ZERO)+ZERO ) return(1);
     if(row0==NULL && row1==NULL)return(-1);
     if(row0==NULL || row1==NULL)return(0);
 
-
-/***
- to do not use the branch-cuts
-***/
-////    return(-1);
-
-
-
     branchs++;
-#ifdef STAMP
-    std::cout << "branching " << branchs << " on constraint" << std::endl;
-#endif
 
-
-/* making the left child */
+    /* making the left child */
 
     row0->stat = LP_BA;
     add_rows(1,&row0);
@@ -394,7 +359,7 @@ int con_branching()
     deletelastrow();
     row0->stat = FIX_LB;
 
-/* making the left child */
+    /* making the left child */
 
 
     row1->stat = LP_BA;
@@ -430,20 +395,11 @@ static void constraint_branching(int nvar,VARIABLE **xvar,CONSTRAINT **con0,CONS
         }
 
     if( card==0 ){
-#ifdef STAMP
-        std::cout << "Warning: no fractional variables for branch-constraint" << std::endl;
-#endif
         return;
     }
     rhs0 = ceil(rhs-ZERO);
     rhs1 = floor(rhs+ZERO);
-#ifdef STAMP
-    std::cout << rhs1 << "<" << rhs << "<" << rhs0 << std::endl;
-#endif
     if( rhs0 - rhs1 < ZERO ){
-#ifdef STAMP
-        std::cout << "Warning: no fractional branch-constraint (sum=" << rhs << std::endl;
-#endif
         return;
     }
     x = (VARIABLE **)malloc( card*sizeof(VARIABLE *) );
@@ -570,5 +526,3 @@ double     get_coeficient_branching(VARIABLE   *col,CONSTRAINT *con)
             return( cvar[k] );
     return 0;
 }
-
-

@@ -43,9 +43,6 @@ int        separa_capacity(int        *card,CONSTRAINT **stack)
     double    maxc;
 
     if( *card ==MAX_CUTS_ITER) return(0);
-#ifdef STAMP
-    std::cout << "    .. capacity cuts .. ";
-#endif
 
     cvar = (double *)malloc( Rncells * sizeof(double) );
     xvar = (VARIABLE **)malloc( Rncells * sizeof(VARIABLE *) );
@@ -64,7 +61,6 @@ int        separa_capacity(int        *card,CONSTRAINT **stack)
         pro = prot_level+l;
         if( !sleep[l] ){
 			index = pro->sen->var->index;
-///////////			free_col(index,bd);
             if( protection_level(pro->sen->var,pro->sense,&nvar,xvar,cvar,primal,'C') < pro->sense * pro->sen->var->nominal + pro->level-ZERO ){
                 con = capacity_constraint(nvar,xvar,cvar,pro->sen->var,pro->level);
                 if( con && new_row(con) ){
@@ -73,7 +69,6 @@ int        separa_capacity(int        *card,CONSTRAINT **stack)
                 }else
                     remove_row( con );
             }
-///////////			unfree_col(index,bd);
             k = l;
             while(k--){
                 pro0 = prot_level+k;
@@ -93,13 +88,6 @@ int        separa_capacity(int        *card,CONSTRAINT **stack)
             if( index != -1 ){
                 free_col(index,bd);
                 if( protection_level(pro->sen->var,pro->sense,&nvar,xvar,cvar,NULL,'C') < pro->sense * pro->sen->var->nominal + pro->level-ZERO ){
-#ifdef STAMP
-                    for(k=0;k<nvar;k++)
-                        if( xvar[k]->index==index ){                            
-                            std::cout << "ERROR: capacity with imposible cell" << std::endl;
-                            CSPexit(EXIT_ERROR); //exit(1);
-                        }
-#endif
                     con = capacity_constraint(nvar,xvar,cvar,pro->sen->var,pro->level);
                     if( con && new_row(con) ){
                         stack[ num++] = con;
@@ -124,9 +112,6 @@ int        separa_capacity(int        *card,CONSTRAINT **stack)
     free(xvar);
     xvar = NULL; /*PWOF*/
     ccapa += num;
-#ifdef STAMP
-    std::cout << num << std::endl;
-#endif
     return( num );
 }
 
@@ -173,18 +158,7 @@ CONSTRAINT *capacity_constraint(int nvar,VARIABLE  **xvar,double    *cvar,VARIAB
             if( xvar[k]->stat==FIX_UB && xvar[k]->lp==0 )
                 maxlhs -= cvar[k];
 
-#ifdef STAMP            
-		if( maxlhs<ZERO )
-            std::cout << "WARNING: capacity with RHS=" << rhs << " maxLHS=" << maxlhs << std::endl;
-#endif		
-
         for(k=0;k<nvar;k++){
-#ifdef STAMP            
-            if( cvar[k] < -ZERO ){
-                std::cout << "ERROR: down rounding with negative LHS" << std::endl;
-                CSPexit(EXIT_ERROR); //exit(1);
-            }
-#endif
             x[k] = xvar[k];
             c[k] = cvar[k];
 
@@ -250,5 +224,3 @@ double     get_coeficient_capacity(VARIABLE   *col,CONSTRAINT *con)
             return( cvar[k] );
     return 0;
 }
-
-

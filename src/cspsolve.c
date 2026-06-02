@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-//#include <crtdbg.h>
 #include <math.h>
 #include "cspdefns.h"
 #include "cspglob2.h"
@@ -215,9 +214,6 @@ int load_lp()
                 std::cout << "ERROR: loading an LP (probably because no hardware-key)" << std::endl;
                 CSPexit(EXIT_LPSOLVER); //exit(1);
         }
-#ifdef STAMP    
-        JJsetscr_ind(lp, 0);
-#endif
         return(0);
 }
 
@@ -227,9 +223,6 @@ int unload_lp()
         int k;
         struct PRICE *ptr;
 
-#ifdef  STAMP
-        JJsetscr_ind(lp, 0);
-#endif
         JJfreeprob(/*(void*)*/&lp);
 
         for(k=1;k<mar;k++){
@@ -244,14 +237,6 @@ int unload_lp()
         }
         mar = 0;
         mac = 0;
-/*****
-		JJfreedata(NULL, objx, rhsx,
-                       senx, matbeg, matcnt, matind, matval,
-                       bdl , bdu , NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL,
-                       NULL, NULL, NULL, NULL, NULL, NULL);
-*****/
         free((void *)objx);
         objx = NULL;
         free((void *)rhsx);
@@ -360,9 +345,6 @@ int add_rows(int rcnt,CONSTRAINT **queue)
 
         if(rcnt==0)return(0);
 
-#ifdef STAMP
-        std::cout << " ... adding " << rcnt << " rows ... " << std::endl;
-#endif
         if( mar+rcnt >= MAX_ROWS_LP ){            
             std::cout << "ERROR: too many LP rows: " << mar+rcnt << std::endl;
             CSPexit(EXIT_ERROR); //exit(1);
@@ -404,9 +386,6 @@ int add_rows(int rcnt,CONSTRAINT **queue)
             }
         }
 
-#ifdef STAMP    
-        JJsetscr_ind(lp,0);
-#endif
         if (JJaddrows(lp,ccnt,rcnt,nzcnt,rhs,sense,
                 rmatbeg,rmatind,rmatval,NULL,NULL) ) {                
                 std::cout << " ERROR: it was not possible to add constraints" << std::endl;
@@ -423,26 +402,20 @@ int add_rows(int rcnt,CONSTRAINT **queue)
         rmatind = NULL; /*PWOF*/
         free((void *)rmatval);
         rmatval = NULL; /*PWOF*/
-#ifdef STAMP
-        if( control_ind() ) CSPexit(EXIT_ERROR); //exit(1);
-#endif
         return(0);
 }
 
 static int add_row(CONSTRAINT *con,double *rhs,char   *sense,int    *rmatind,double *rmatval)
 
 {
-    //int      card,j;
     int      card;
     int      l = 0;
     VARIABLE **stack;
     double   *coef;
     
-    // PWOF intialising
     coef=NULL;
     stack=NULL;
     card=0;
-    //
 
     if( con->lp != -1 ){        
         std::cout << "ERROR: constraints already in the LP (" << con->lp << ")" << std::endl;
@@ -489,28 +462,9 @@ static int add_row(CONSTRAINT *con,double *rhs,char   *sense,int    *rmatind,dou
         }
     }
 
-#ifdef STAMP
-    if(l==0){
-            std::cout << "WARNING: empty left-hand-side constraint" << std::endl;
-            if(( *rhs>ZERO && *sense!='L' )||( *rhs<-ZERO && *sense!='G' ))
-                std::cout << "        (probably infeasible LP)"  << std::endl;
-            else if ((*rhs< ZERO && *rhs>-ZERO ) ||
-                     (*rhs> ZERO && *sense=='L') ||
-                     (*rhs<-ZERO && *sense=='G') )
-                std::cout << "        (probably not useful cut)"  << std::endl;
-            else{                
-                std::cout << "        ERROR: bad cut"  << std::endl;
-                /* print_row(con); */
-                CSPexit(EXIT_ERROR); //exit(1);
-            }
-    }
-#endif
     rmatind[l] = 0;
     rmatval[l] = *rhs;
     l++;
-#ifdef STAMP    
-    control_constraint( con );
-#endif
 
     switch( con->type ){
     case COVER:
@@ -548,10 +502,7 @@ int  add_cols(int  ccnt,VARIABLE **stack)
     double  *cbdu   ={NULL};
 
     if (ccnt==0) return(0);
-#ifdef STAMP
-    std::cout << " ... adding " << ccnt << " cols ..." << std::endl;
-#endif
-    
+
     if (mac+ccnt>=MAX_COLS_LP){        
         std::cout << " ERROR: too many LP columns" << std::endl;
         CSPexit(EXIT_ERROR); //exit(1);
@@ -608,7 +559,6 @@ int  add_cols(int  ccnt,VARIABLE **stack)
         //exit(1);
     }
 
-/*  control();  */
 
     free((char *)cobj);
     cobj = NULL; /*PWOF*/
@@ -625,108 +575,6 @@ int  add_cols(int  ccnt,VARIABLE **stack)
     return(ccnt);
 }
 
-/*
-int  add_cols_all()
-{
-    int      i,j,k;
-    VARIABLE *col;
-    struct   PRICE *p;
-    
-    int     ccnt,nzcnt;
-    double  *cobj   ={NULL};
-    int     *cmatbeg={NULL};
-    int     *cmatind={NULL};
-    double  *cmatval={NULL};
-    double  *cbdl   ={NULL};
-    double  *cbdu   ={NULL};
-
-    ccnt = npricing;
-    if (ccnt==0) return(0);
-#ifdef STAMP
-    printf(" ... adding %3d cols ...\n",ccnt);
-#endif
-    npricing = 0;
-    
-    if (mac+ccnt>=MAX_COLS_LP){
-        printf(" ERROR: too many LP columns\n");
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-
-    if(( cobj=(double *)malloc( sizeof(double)*ccnt ) )==NULL){
-        printf("No hay memoria para vector COBJ");
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    if(( cbdl=(double *)malloc( sizeof(double)*ccnt ) )==NULL){
-        printf("No hay memoria para vector CBDL");
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    if(( cbdu=(double *)malloc( sizeof(double)*ccnt ) )==NULL){
-        printf("No hay memoria para vector CBDU");
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    if(( cmatbeg=(int *)malloc( sizeof(int)*ccnt ) )==NULL){
-        printf("No hay memoria para vector CMATBEG");
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    if(( cmatind=(int *)malloc( ccnt*mar*sizeof(int) ) )==NULL){
-        printf("No hay memoria para vector CMATIND");
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-    if(( cmatval=(double *)malloc( ccnt*mar*sizeof(double) ) )==NULL){
-        printf("No hay memoria para vector CMATVAL");
-        CSPexit(EXIT_MEMO); //exit(1);
-    }
-
-    nzcnt=0;
-    for (k=0;k<ccnt;k++){
-#ifdef STAMP
-        if(list_pricing==NULL){
-            printf("ERROR: empty pricing list\n");
-            CSPexit(EXIT_ERROR); //exit(1);
-        }
-#endif
-        col = list_pricing->col;
-        col->stat   = LP_LB;
-        col->lp     = mac;
-        cind[mac++] = col;
-
-        cobj[k]    =col->weight;
-        cbdl[k]    =0.0;
-        cbdu[k]    =1.0;
-        cmatbeg[k] =nzcnt;
-        for (i=1;i<mar;i++){
-            j = get_coeficient(col,rind[i]);
-            if( j ){
-                cmatind[nzcnt] = i;
-                cmatval[nzcnt] = j;
-                nzcnt++;
-            }
-        }
-        p = list_pricing;
-        list_pricing = list_pricing->next;
-        free(p);
-    }
-#ifdef STAMP
-    if(list_pricing){
-        printf("ERROR: non empty pricing list\n");
-        CSPexit(EXIT_ERROR); //exit(1);
-    }
-#endif
-    if( JJaddcols(lp,ccnt,nzcnt,cobj,cmatbeg,cmatind,cmatval,cbdl,cbdu,NULL) )
-        CSPexit(EXIT_LPSOLVER); //exit(1);
-
-  control(); 
-
-    free((char *)cobj);
-    free((char *)cbdl);
-    free((char *)cbdu);
-    free((char *)cmatbeg);
-    free((char *)cmatind);
-    free((char *)cmatval);
-    return(ccnt);
-}
-*/
-
 
 void rem_cols(int         card,VARIABLE    **stack)
 
@@ -737,9 +585,6 @@ void rem_cols(int         card,VARIABLE    **stack)
     anterior = (struct PRICE*) malloc(sizeof(struct PRICE)); // PWOF added memory allocation
 
     if (card==0) return;
-#ifdef STAMP
-    std::cout << " ... fixing " << card << " cols ..." << std::endl;
-#endif
 
     p = list_pricing;
     k = 0;
@@ -758,10 +603,6 @@ void rem_cols(int         card,VARIABLE    **stack)
         p = posterior;
     }
 }
-
-
-
-
 
 
 double dualcost(double *u,double *dj)
@@ -809,14 +650,6 @@ PRIC:
     }
     pricing_util ++;
 
-
-#ifdef STAMP
-    if( JJgetitc(lp)==0 ){
-        std::cout << "WARNING: no LP iterations!" << std::endl;
-    }
-#endif
-
-
     switch( JJgetstat(lp) ){
         case JJ_OPTIMAL:
         case JJ_OPTIMAL_INFEAS:
@@ -828,16 +661,10 @@ PRIC:
         case JJ_INFEASIBLE:
             if( pricing_done==0 )
                 goto PRIC;
-#ifdef STAMP
-            std::cout << " WARNING: non-feasible LP problem" << std::endl;
-#endif
             return( (double)upperb );
         case JJ_UNBOUNDED:
             if( pricing_done==0 )
                 goto PRIC;
-#ifdef STAMP
-            std::cout << " WARNING: non-bounded LP problem" << std::endl;
-#endif
             return( (double)upperb );
         default:            
             std::cout << " ERROR: pstat=" << JJgetstat(lp)  << std::endl;
@@ -851,9 +678,6 @@ void get_solution()
 {
     double *xval;
     int    i;
-#ifdef STAMP    
-    int    k;
-#endif
 
     i = JJgetstat(lp);
     switch( i ){
@@ -863,9 +687,6 @@ void get_solution()
             lowerb += lowerb1;
             break;
         case JJ_INFEASIBLE:
-#ifdef STAMP
-            std::cout << " WARNING: non-feasible LP problem" << std::endl;
-#endif
             lowerb = (double)upperb ;
             break;
         case JJ_UNBOUNDED:
@@ -877,10 +698,6 @@ void get_solution()
             CSPexit(EXIT_LPSOLVER); //exit(1);
     }
 
-#ifdef STAMP
-    std::cout << " ... LP: UB=" << upperb << " LB=" << (float)lowerb << " tit=" << JJgetitc(lp) << " Iit=" << JJgetitci(lp) << " mac=" << JJgetmac(lp) << " mar=" << JJgetmar(lp) << " nz=" << JJgetmat(lp);
-#endif
-
     for( nsupport=0 ; nsupport<nfixed1 ; nsupport++ )
         support[ nsupport ] = fixed1[ nsupport ];
 
@@ -891,40 +708,10 @@ void get_solution()
         if( xval[i]>ZERO ) support[ nsupport++ ] = cind[i];
     }
     
-#ifdef STAMP
-    for(k=0,i=1;i<mac;i++)
-        if( ZERO<xval[i] && xval[i]<1-ZERO ){
-            k++;
-        }
-    std::cout << " frac=" << k << std::endl;
-#endif
     free((void *)xval);
     xval = NULL; /*PWOF*/
 }
 
-
-
-
-/*********
-int reduced_cost()
-{
-    int    k,lb;
-    double *dj;
-
-    dj     = (double *)malloc(mac*sizeof(double));
-    if( JJgetdj(lp,dj,0,mac-1) ){
-        puts(" No reduced cost avalaible ");
-        CSPexit(EXIT_LPSOLVER); //exit(1);
-    }
-    for(k=1;k<mac;k++){
-        lb = (int)ceil(lowerb+dj[k]);
-        if( lb > cind[k]->lb )
-            cind[k]->lb = lb;
-    }
-    free((void *)dj);
-    return(0);
-}
-********/
 
 void del_col(VARIABLE *var,int sta)
 
@@ -948,9 +735,6 @@ int del_cols()
     double rc;
     int    *status;
     double *dj;
-#ifdef STAMP
-	double obj;
-#endif
     if( pricing_done==0 )
         return(0);
 
@@ -981,9 +765,6 @@ int del_cols()
             }
         }
     }
-#ifdef STAMP
-    std::cout << " ... deleted cols ... " << num0 << " to 0, " << num1 << " to 1, " << num2 << " sleep" << std::endl;
-#endif
     free((void *)dj);
     dj = NULL; /*PWOF*/
 
@@ -1000,16 +781,6 @@ int del_cols()
         std::cout << " it was not possible to solve with OPTIMIZE " << std::endl;
         CSPexit(EXIT_LPSOLVER); //exit(1);
     }
-#ifdef STAMP
-    if( JJgetitc(lp) ){        
-        JJgetobjval( lp , &obj );
-        std::cout << "WARNING: LP iterations! (new obj=" << lowerb1+obj << ")" << std::endl;
-        CSPexit(EXIT_LPSOLVER);
-/**
-        exit(1);
-**/        
-    }
-#endif    
     return(num0+num1+num2);
 }
 
@@ -1111,9 +882,6 @@ int del_rows()
             default:
                 break;
         }
-#ifdef STAMP
-    std::cout << " ... deleted rows ... " << num0 << " + " << num1 << std::endl;
-#endif
     free( (void *)slack);
     slack = NULL; /*PWOF*/
     
@@ -1130,15 +898,6 @@ int del_rows()
         std::cout << " it was not possible to solve with OPTIMIZE " << std::endl;
         CSPexit(EXIT_LPSOLVER); //exit(1);
     }
-#ifdef STAMP
-    if( JJgetitc(lp) ){        
-        std::cout << "WARNING: LP iterations!" << std::endl;
-        CSPexit(EXIT_LPSOLVER);
-/**        
-        exit(1);
-**/
-    }
-#endif
     return(num0+num1);
 }
 
@@ -1166,9 +925,6 @@ static void deleterows(int *status)
 void deletelastrow()
 {
     int *status;
-#ifdef STAMP
-    std::cout << " ... deleting last rows\n";
-#endif
     status = (int *)calloc( mar , sizeof(int) );
     mar--;
     status[mar] = 1;
@@ -1283,9 +1039,6 @@ int integer_solution(void)
 
     JJoptimize(lp);
     if( JJgetstat(lp)!=JJ_OPTIMAL && JJgetstat(lp) !=JJ_OPTIMAL_INFEAS ){
-#ifdef STAMP        
-        std::cout << "WARNING: LP status = " << JJgetstat(lp)  << std::endl;
-#endif
         return(1);
     }
     xval = (double *)malloc( mac*sizeof(double) );
@@ -1304,19 +1057,12 @@ int integer_solution(void)
         JJgetobjval( lp , &obj );
         ub = lowerb1 + (int)ceil(obj-ZERO);
         if( upperb > ub ){
-#ifdef STAMP
-                std::cout << " Integer solution of value " << ub << std::endl;
-                std::cout << "    BETTER THAN THE CURRENT ONE" << std::endl;
-#endif
                 ubtype  = 'L';
                 topti   = seconds()-t0;
                 upperb  = ub;
                 nbetter = nsup;
                 for(i=0;i<nsup;i++)
                     better[i] = sup[i];
-#ifdef STAMP                
-                write_heu(fheuristi);
-#endif
                 CSPnewsolution();
         }
         free( xval );
@@ -1338,16 +1084,7 @@ int integer_solution(void)
 
 void setup_lp()
 {
-#ifdef STAMP
-    double obj;
-#endif
     JJoptimize(lp);
-#ifdef STAMP
-    if( JJgetitc(lp) ){
-        JJgetobjval( lp , &obj );
-        std::cout << "WARNING: " << JJgetitc(lp) << " LP iterations in setup_lp! LB=" << lowerb1+obj << std::endl;
-    }
-#endif
 }
 
 
@@ -1374,4 +1111,3 @@ void activa_pricing()
 {
     pricing_util = 0;
 }
-

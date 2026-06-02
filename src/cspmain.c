@@ -33,12 +33,6 @@
 #include "cspglob2.h"
 #include "my_time.h"
 
-/*#ifdef WIN32 //|| WIN64
-    #include <direct.h>
-#else
-    #include <unistd.h>
-#endif*/
-
 static std::streambuf *psbuf, *backup;
 static std::ofstream filestr;
 static char *fCSPlog;
@@ -301,7 +295,6 @@ int PPCSPGetIntegerConstant(const int ConstName)
 			return -9;
 	}
 }
-// PWOF: added end
 
 int  PPCSPoptimize(IProgressListener* ProgressListener)
 {
@@ -312,10 +305,9 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
     float      t1,tprep,theur0,theur1,troot,tseparation,tstart;
     double     lowerb_root;
     int        NEWcells,NEWnsums;
-//#ifdef STAMP
     FILE       *fich;
     float      cpu;
-//#endif
+     
     t0=seconds();
     tstart=t0;
     
@@ -341,8 +333,6 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
         if( sensitive[k].upl>ZERO ) initpl++;
     }
 
-    // Added PWOF initializing global variables!
-    // Needed when repeatedly calling PCSPoptimize() from modular approach
     nsupport = 0;
     nbetter = 0;
     upperb = 0;
@@ -357,21 +347,15 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
     cmatc = 0;
     cpath = 0;
     cpath2 = 0;
-    // End Added PWOF
+
     /**** preprocessing ****/
 
-    // k = preprocessing();
-    // k replaced by res_prep: was confusing to use k as result of preprocessing as well as counter
     res_prep = preprocessing();
 
     tprep = seconds()-t0;
     NEWcells = Rncells;
     NEWnsums = Rnsums;
-#ifdef STAMP
-        std::cout << " New number of cells=" << Rncells << "     New number of links=" << Rnsums << std::endl;
-#endif
-        
-    // k replaced by res_prep: was confusing to use k as result of preprocessing as well as counter
+
     if( res_prep==0 ){
         upperb_root = upperb_init = upperb = 0;
         nbetter = nsensitive;
@@ -379,9 +363,6 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
             better[k] = sensitive[k].var;
             upperb += better[k]->weight;
         }
-#ifdef STAMP
-        std::cout << " All the sensitive cells are auto-protected " << std::endl;
-#endif
         branchs = -1;
         ubtype = 'P';
         goto OUT;
@@ -390,18 +371,11 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
         upperb_root = upperb_init = upperb = INF;
         nbetter = 1;
         better[0] = prot_level[-res_prep-1].sen->var;
-#ifdef STAMP
-        std::cout << " Not feasible solution exists because cell " << better[0]->name << std::endl;
-#endif
         tprep = troot = seconds()-t0;
         branchs = -1;
         ubtype = 'P';
         goto OUT;
     }
-
-#ifdef STAMP
-    std::cout << " Time = " << seconds()-t0 << " sec.  " << std::endl;
-#endif
 
     /**** initial feasible solution ****/
     for(k=0;k<Rncells;k++)
@@ -415,17 +389,6 @@ int  PPCSPoptimize(IProgressListener* ProgressListener)
     }
 
     if( upperb == INF ){
-
-#ifdef STAMP
-        std::cout << "WARNING: not initial feasible solution found!!!!!!!!" << std::endl; //system("pause");
-#endif
-/**        nbetter = Rncells;
-        upperb = 0;
-        for(k=0;k<nbetter;k++){
-            upperb += columns[k].weight;
-            better[k] = columns+k;
-        }
-**/
         bad_heuristic = 1;
         goto OUT;
     }
@@ -491,10 +454,6 @@ JUMP:
 
             t1 = seconds() - t0;
             iterations++;
-#ifdef STAMP
-            std::cout << "***  Iter = " << iterations << " ; Nrows = " << nrows << " ;";
-            std::cout << " Time = " << t1 << " sec." << std::endl;
-#endif
             if ( t1 > MAX_TIME ) 
             {
                 int res = 0;
@@ -536,13 +495,9 @@ JUMP:
 OUT:
 
     if( tree ) bestLB = ceil( tree->val - ZERO );
-//    else if(lowerb-ZERO<upperb) bestLB = ceil( lowerb - ZERO );
-//    else bestLB = upperb;
     unload_branch_tree();
 
 
-
-//#ifdef STAMP
 
     cpu = seconds() - t0;
     if ( cpu>MAX_TIME ){
@@ -571,9 +526,7 @@ OUT:
        CSPcells,CSPnsums,NEWcells,NEWnsums,nsensitive,initpl,l1u1,l1u0,l0u1,l0u0,tprep,theur0,upperb_init,theur1,theur,upperb_root,(float)ceil((double)lowerb_root-ZERO),troot,upperb,nbetter-nsensitive,topti,
        (int)bestLB,nbr,cpu,tseparation,tpricing,toptimize,lprows,nrows,cpool,rowsinit,ccapa,cbrid,ccove,ccove2,cgomo,cmatc,cpath,cpath2,iterations,ubtype);
     fclose(fich);
-//#endif 
-    
-    //return(0);
+
     return(bad_heuristic);
 }
 
@@ -596,34 +549,6 @@ int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight
     psbuf = filestr.rdbuf();   // get file's streambuf
     std::cout.rdbuf(psbuf);         // assign streambuf to cout
 
-/**********************
-#ifdef PARTIAL
-    double   max2;
-
-    printf("changing input data for partial suppression results\n");
-    max2 = 0.0;
-    for(k=0;k<ncells_;k++)
-        if( data_[k]>max2 ) max2 = data_[k];
-
-//    srand(12345);
-    for(k=0;k<ncells_;k++){
-//        range = (int)floor( data_[k]/2.0 );
-
-        lb_[k] = data_[k]/2.0;
-        ub_[k] = 2.0*data_[k];
-//        ub_[k] = ( range>0 ? data_[k]+range+ (rand() % range) : 2 );
-
-
-        weight_[k] = ceil( ub_[k]-lb_[k] );
-        if(max2>1000000) weight_[k] = ceil( (double)weight_[k]/1000.0 );
-
-        if( upl_[k]>ZERO || lpl_[k]>ZERO )
-            upl_[k] = lpl_[k] = data_[k]/4.0 ;
-    }
-#endif
-**********************/
-
-
     nl=l=0;
     for(k=0;k<nsums_;k++){
         nz = 0;
@@ -638,32 +563,14 @@ int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight
         }
         if( nz==1 ){
             if( status_[nl]=='u' ){
-#ifdef STAMP
-                std::cout << "Unfeasible problem because sensitive cell " << names_[nl] << " needs to be published according to constraint " << k << std::endl;
-#endif
                 return 1;
             } else {
                 status_[nl]='z';
             }
         } else if ( nz==2 && status_[nl] != status_[np] ){
-//			status_[nl] = status_[np] = 'u';
-#ifdef STAMP
-            if(status_[nl]=='s')
-                std::cout << "New sensitive cell: " << names_[nl] << std::endl;
-            else
-                std::cout << "New sensitive cell: " << names_[np] << std::endl;
-#endif
         }
 
     }
-
-
-
-
-#ifdef STAMP
-    if( CSPtestprob(nsums_,rhs_,ncells_,data_,weight_,status_,lpl_,upl_,lb_,ub_,names_,nlist_,listcell_,listcoef_) )
-        return 1;
-#endif
 
     CSPcells = ncells_;
     CSPnsums = nsums_;
@@ -693,31 +600,6 @@ int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight
     for(k=0;k<ncells_;k++)
         if( status_[k]=='z' )
             delcell(k,data_[k],rhs_);
-
-
-
-
-#ifdef STAMP
-    l = 0;
-    for(k=0;k<nsums_;k++)
-        if( nlistsum[k]==2 )
-            l++;
-    std::cout << "Warning: " << l << " links of TWO variables" << std::endl;
-
-
-//            printf("WARNING: condition %d has %d variables\n",k,nlistsum[k]);
-//            h = nlist_[k];
-//            while(h--){
-//                printf(" %d*A%d(%c)",listcoef_[l],listcell_[l],status_[listcell_[l]]);
-//                l++;
-//            }
-//            printf("=%f\n",rhs_[k]);
-//        } else
-//            l += nlist_[k];
-//    }
-#endif
-
-
 
 
     /******  names ******/
@@ -784,7 +666,7 @@ int PPCSPloadprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight
      if( better==NULL )return(1);
 
 
-/************  loading table in CBS input format *******************/
+     /************  loading table in CBS input format *******************/
 
      for(k=0;k<Rncells;k++){
          l = oldcellname[k];
@@ -1284,16 +1166,11 @@ int CSPwrite(char *filename)
     fprintf(file,"0\n %d\n",Rncells);
     for(i=0;i<Rncells;i++){
         col = columns+i;
-        // if( col->name )
-        //    fprintf(file, " %10s ",col->name);
-        // else
         fprintf(file, " %10d ",col->index);
         fprintf(file,"%10.1f %10d ",col->nominal,col->weight);
         switch( col->stat ){
             case FIX_UB: fprintf(file,"u ");
                     break;
-//            case FIX_LB: fprintf(file,"z ");
-//                    break;
             default : fprintf(file,"s ");
         }
         fprintf(file,"%10.1f %10.1f ",(col->nominal)-(col->lvalue),(col->nominal)+(col->uvalue));
@@ -1354,18 +1231,6 @@ int CSPwrite(char *filename)
 
 	
 
-	/**
-	fprintf(file,"For each cell, the equations (and coeficients) are:\n");
-    for(i=0;i<Rncells;i++){
-        col = columns+i;
-        j = 0;
-        for( c=col->next ; c ; c=c->next ) j++;
-        fprintf(file,"cell %d in %d equations :",i,j);
-        for( c=col->next ; c ; c=c->next )
-                fprintf(file," %d(%d)",c->index,c->coef);
-        fprintf(file,"\n");
-    }
-    **/
     fclose(file);
     return 0;
 }
@@ -1405,10 +1270,6 @@ int CSPtestprob(int nsums_,double *rhs_,int ncells_,double *data_,int  *weight_,
             std::cout << "ERROR: data of " << k << " = " << lb_[k] << " < " << data_[k] << " < " << ub_[k] << std::endl;
             return 1;
         }
-//        if( data_[k]-lpl_[k]<lb_[k]-ZERO || data_[k]+upl_[k]>ub_[k]+ZERO ){
-//            printf("Warning: prot.levels of %d = %lf < %lf < %lf\n",k,data_[k]-lpl_[k],data_[k],data_[k]+upl_[k]);
-//            return 1;
-//        }
         if( status_[k]!='s' && status_[k]!='z' && status_[k]!='u'){
             std::cout << "ERROR: status of " << k << " = " << status_[k] << std::endl;
             return 1;

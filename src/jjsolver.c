@@ -23,136 +23,6 @@ static bool dual = false;
 static JJLPptr *Env = NULL;
 #endif
 
-/*#ifdef CPLEX3
-#define  SYSWAT386
-#include "c:\cplex\cpxdefs.inc"
-typedef CPXLPptr JJLPptr;
-#endif
-
-#ifdef CPLEX7
-#include <ilcplex/cplex.h>
-#define CPLEX5
-#endif
-
-#ifdef CPLEX5
-#define  SYSWAT386
-#ifndef CPLEX7
-#include "c:\cplex50\cplex.h"
-#endif
-typedef CPXLPptr JJLPptr;
-static CPXENVptr Env = NULL;         // CPLEX enviroment
-//static unsigned int lpJJ;            // for counting the loaded LP's
-#endif
-
-
-#ifdef XPRESS11
-#define XPRESS
-#endif
-
-
-#ifdef XPRESS
-//#define DLL
-
-#ifdef XPRESS11
-#include "xpresso.h"
-//#include "c:\xpress11\xpresso.h"        Attentive with output(,)
-//#define XOSLDIR "c:\\xpress11"
-   #define XOSLDIR NULL            //set XPRESSMP in  "autoexec.bat"
-   #define XOSLMEM 0
-#else
-   #include "c:\xpress10\w32_osl\xpresso.h"
-   #define XOSLDIR "c:\\xpress10\\w32_osl"
-   #define XOSLMEM 16000000
-#endif
-struct JJLP {
-        int ref;
-        int objsen;
-};
-typedef struct JJLP *JJLPptr;
-static JJLPptr current_lp = NULL;
-//static unsigned int lpJJ;            // for counting the loaded LP's
-static void JJcheck(JJLPptr);
-
-static void JJcheck(lp)
-JJLPptr lp;
-{
-    if(lp==NULL){
-        fprintf(stderr,"JJ ERROR: not lp\n");
-        CSPexit(EXIT_LPSOLVER); //exit(1);
-    }                                         
-    if(lp != current_lp){ 
-        if( current_lp ){
-            if( savmat( &(current_lp->ref) ) ){
-                fprintf(stderr,"JJ ERROR: not savmat()\n");
-                CSPexit(EXIT_LPSOLVER); //exit(1);
-            }
-        }                                         
-        current_lp = lp;                         
-        if( resmat( current_lp->ref ) ){ 
-            fprintf(stderr,"JJ ERROR: not resmat()\n");
-            CSPexit(EXIT_LPSOLVER); //exit(1);
-        }
-    }
-}
-#endif */
-
-
-/*****
-void JJfreedata ( probname, obj, rhs, sense, matbeg, matcnt,
-                    matind, matval, lb, ub, rngval,
-                    freerowind, rimtype, rimbeg, rimcnt, rimind, rimval,
-                    dataname, objname, rhsname, rngname, bndname,
-                    colname, colnamestore, rowname, rownamestore,
-                    rimname, rimnamestore)
-char *probname;
-double *obj, *rhs;
-char *sense;
-int *matbeg, *matcnt, *matind;
-double *matval, *lb, *ub, *rngval;
-int *freerowind, *rimtype, *rimbeg, *rimcnt, *rimind;
-double *rimval;
-char *dataname, *objname, *rhsname, *rngname, *bndname;
-char **colname;
-char *colnamestore;
-char **rowname;
-char *rownamestore;
-char **rimname;
-char *rimnamestore;
-{
-#ifdef CPLEX3
-	if(probname)   free(probname);
-	if(obj)        free(obj);
-	if(rhs)        free(rhs);
-	if(sense)      free(sense);
-	if(matbeg)     free(matbeg);
-	if(matcnt)     free(matcnt);
-	if(matind)     free(matind);
-	if(matval)     free(matval);
-	if(lb)         free(lb);
-	if(ub)         free(ub);
-	if(rngval)     free(rngval);
-	if(freerowind) free(freerowind);
-	if(rimtype)    free(rimtype);
-	if(rimbeg)     free(rimbeg);
-	if(rimcnt)     free(rimcnt);
-	if(rimind)     free(rimind);
-	if(rimval)     free(rimval);
-	if(dataname)   free(dataname);
-	if(objname)    free(objname);
-	if(rhsname)    free(rhsname);
-	if(rngname)    free(rngname);
-	if(bndname)    free(bndname);
-	if(colname)    free(colname);
-	if(colnamestore) free(colnamestore);
-	if(rowname)    free(rowname);
-	if(rownamestore) free(rownamestore);
-	if(rimname)    free(rimname);
-	if(rimnamestore) free(rimnamestore);
-#endif
-}
-*****/
-
-
 
 JJLPptr JJloadprob (
 char *probname,
@@ -202,53 +72,11 @@ unsigned colnamespace, unsigned rownamespace, unsigned rimnamespace
        }
        lpJJ = 0;
    }
-/****
-   lp = CPXloadprob (Env, probname, numcols, numrows, numrims,
-                    objsen, obj, rhs, sense, matbeg, matcnt,
-                    matind, matval, lb, ub, rngval,
-                    freerowind, rimtype, rimbeg, rimcnt, rimind, rimval,
-                    dataname, objname, rhsname, rngname, bndname,
-                    colname, colnamestore, rowname, rownamestore,
-                    rimname, rimnamestore, colspace, rowspace, nzspace,
-                    rimspace, rimnzspace, colnamespace, rownamespace,
-                    rimnamespace);
-*****/  // modified on December 2006 to link with CPLEX 10
 
     lp = CPXcreateprob (CPLEXv::Env, &status, probname);
     status = CPXcopylp (CPLEXv::Env, lp, numcols, numrows, objsen, obj, rhs,
                      sense, matbeg, matcnt, matind, matval, lb, ub, rngval);
 
-
-/*****
-    if(probname)   free(probname);
-    if(obj)        free(obj);
-	if(rhs)        free(rhs);
-	if(sense)      free(sense);
-	if(matbeg)     free(matbeg);
-	if(matcnt)     free(matcnt);
-	if(matind)     free(matind);
-	if(matval)     free(matval);
-	if(lb)         free(lb);
-	if(ub)         free(ub);
-	if(rngval)     free(rngval);
-	if(freerowind) free(freerowind);
-	if(rimtype)    free(rimtype);
-	if(rimbeg)     free(rimbeg);
-	if(rimcnt)     free(rimcnt);
-	if(rimind)     free(rimind);
-	if(rimval)     free(rimval);
-	if(dataname)   free(dataname);
-	if(objname)    free(objname);
-	if(rhsname)    free(rhsname);
-	if(rngname)    free(rngname);
-	if(bndname)    free(bndname);
-	if(colname)    free(colname);
-	if(colnamestore) free(colnamestore);
-	if(rowname)    free(rowname);
-	if(rownamestore) free(rownamestore);
-    if(rimname)    free(rimname);
-    if(rimnamestore) free(rimnamestore);
-*****/
    if( lp ) lpJJ++;
    return lp;
 #endif
@@ -288,36 +116,6 @@ unsigned colnamespace, unsigned rownamespace, unsigned rimnamespace
         return NULL;
     }
     lpJJ++;
-/*****
-    if(probname)   free(probname);
-    if(obj)        free(obj);
-	if(rhs)        free(rhs);
-	if(sense)      free(sense);
-	if(matbeg)     free(matbeg);
-	if(matcnt)     free(matcnt);
-	if(matind)     free(matind);
-	if(matval)     free(matval);
-	if(lb)         free(lb);
-	if(ub)         free(ub);
-	if(rngval)     free(rngval);
-	if(freerowind) free(freerowind);
-	if(rimtype)    free(rimtype);
-	if(rimbeg)     free(rimbeg);
-	if(rimcnt)     free(rimcnt);
-	if(rimind)     free(rimind);
-	if(rimval)     free(rimval);
-	if(dataname)   free(dataname);
-	if(objname)    free(objname);
-	if(rhsname)    free(rhsname);
-	if(rngname)    free(rngname);
-	if(bndname)    free(bndname);
-	if(colname)    free(colname);
-	if(colnamestore) free(colnamestore);
-	if(rowname)    free(rowname);
-	if(rownamestore) free(rownamestore);
-    if(rimname)    free(rimname);
-    if(rimnamestore) free(rimnamestore);
-*****/
     return current_lp;
 #endif 
     
@@ -348,9 +146,7 @@ unsigned colnamespace, unsigned rownamespace, unsigned rimnamespace
     XPRSsetintcontrol(lp->prob,XPRS_EXTRAROWS,rowspace-numrows);
     for (total=k=0;k<numcols;k++) total += matcnt[k];
     XPRSsetintcontrol(lp->prob,XPRS_EXTRAELEMS,nzspace-total);
-    // Needed ????
-    //XPRSsetintcontrol(lp->prob,XPRS_SOLUTIONFILE,0);
-    
+
     XPRSsetdblcontrol(lp->prob,XPRS_FEASTOL, FEAS_TOL);
     XPRSsetdblcontrol(lp->prob,XPRS_OPTIMALITYTOL, OPT_TOL);
     
@@ -386,7 +182,6 @@ unsigned colnamespace, unsigned rownamespace, unsigned rimnamespace
         Env[1] = NULL;
         lpJJ = 0;
     }
-    //SCIP_LPI *lp = NULL;
     JJLPptr lp=NULL;
     
     SCIPlpiCreate(&lp,NULL,probname,(SCIP_OBJSEN)objsen);
@@ -416,8 +211,6 @@ unsigned colnamespace, unsigned rownamespace, unsigned rimnamespace
 
     delete[] rowLower;
     delete[] rowUpper;
-    //SCIPlpiSetRealpar(lp,SCIP_LPPAR_FEASTOL,1.0E-5);   // feasibility tolerence for primal variables and slacks
-    //SCIPlpiSetRealpar(lp,SCIP_LPPAR_DUALFEASTOL,1.0E-5); // feasibility tolerance for dual variables and reduced costs
 
     if( lp ) lpJJ++;
     return lp;
@@ -459,8 +252,6 @@ JJLPptr *lp)
    int   status;
 
    if ( lp != NULL ) {
-//    status = CPXunloadprob ( Env , lp);
-//    Modified on December 2006 to link with CPLEX 10
       status = CPXfreeprob ( CPLEXv::Env , lp);
       if ( status ) {
         fprintf (stderr, "CPXunloadprob failed, error code %d.\n", status);
@@ -515,7 +306,6 @@ JJLPptr *lp)
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJfreeprob" << std::endl;
     SCIPlpiFree(lp);
     lpJJ--;
     if ( lpJJ == 0) { // no lp left in Env[]
@@ -560,7 +350,6 @@ JJLPptr lp)
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJoptimize" << std::endl;
     dual = false;
     if (SCIPlpiSolvePrimal(lp) == SCIP_OKAY) return 0;
     return 1;
@@ -598,7 +387,6 @@ JJLPptr lp)
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJdualopt" << std::endl;
     dual = true;
     if (SCIPlpiSolveDual(lp) == SCIP_OKAY) return 0;
     return 1;
@@ -666,7 +454,6 @@ int *itcnt_p
    *itcnt_p     = 0;
    *netstatus_p = CPXdualopt(CPLEXv::Env,lp);
    return *netstatus_p;
-   // return CPXhybnetopt(Env,lp,CPX_ALG_DUAL);
 #endif
 #endif
 
@@ -697,7 +484,6 @@ int *itcnt_p
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJnetopt" << std::endl;
     *numnodes_p  = 0;
     *numarcs_p   = 0;
     *itcnt_p     = 0;
@@ -723,7 +509,6 @@ JJLPptr lp)
 #endif
    
 #ifdef VSCIP
-    //std::cout << "\nJJmipopt" << std::endl;
     dual = false;
     if (SCIPlpiSolvePrimal(lp) == SCIP_OKAY) return 0;
     return 1;
@@ -749,8 +534,6 @@ int scr_ind)
 #ifdef XPRESS
    int status;
    status = setoptlog("xosl.log");
-//   std::cout << "JJ WARNING: not seticv" << std::endl;
-//   status = seticv(N_IFMSG,1);
    status = seticv(N_PRTMSG,scr_ind);
    return 0;
 #endif 
@@ -773,7 +556,6 @@ int scr_ind)
 
    
 #ifdef VSCIP
-    //std::cout << "\nJJsetscr_ind" << std::endl;
     SCIPlpiSetIntpar(Env[lpJJ-1],SCIP_LPPAR_LPINFO,scr_ind);
     return 0;
 #endif
@@ -810,7 +592,6 @@ JJLPptr lp)
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJgetmac" << std::endl;
     int ncols;
     SCIPlpiGetNCols(lp,&ncols);
     return ncols;
@@ -847,7 +628,6 @@ JJLPptr lp)
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetmar" << std::endl;
     int nrows;
     SCIPlpiGetNRows(lp,&nrows);
     return nrows;
@@ -886,7 +666,6 @@ JJLPptr lp)
 
 
 #ifdef VSCIP
-    //std::cout << "\nJJgetmat" << std::endl;
     int num;
     SCIPlpiGetNNonz(lp,&num);    
     return num;
@@ -895,7 +674,6 @@ JJLPptr lp)
 
 
 int JJlpiterlimit(
-/*JJLPptr lp,*/
 int val)
 {
 #ifdef CPLEX3
@@ -917,7 +695,6 @@ int val)
 #endif
 
 #ifdef VSCIP
-    //std::cout << "\nJJlpiterlimit" << std::endl;
     SCIPlpiSetIntpar(Env[lpJJ-1],SCIP_LPPAR_LPITLIM,val);
     return 0;
 #endif
@@ -989,7 +766,6 @@ int    begin, int end
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJgetobj" << std::endl;
     SCIPlpiGetObj(lp,begin,end,obj);
     return 0;
 #endif
@@ -1027,7 +803,6 @@ int    begin,int end
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJgetrhs" << std::endl;
     SCIP_Real *lhss = new SCIP_Real[end-begin+1];
     SCIP_Real *rhss = new SCIP_Real[end-begin+1];
     SCIPlpiGetSides(lp,begin,end,lhss,rhss);
@@ -1038,9 +813,6 @@ int    begin,int end
         else
             rhs[i] = rhss[i];
     }
-    //PWOF change 23-08-2013
-    //delete lhss;
-    //delete rhss;
     delete[] lhss;
     delete[] rhss;
     return 0;
@@ -1079,7 +851,6 @@ int    begin,int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetsense" << std::endl;
     SCIP_Real *lhss = new SCIP_Real[end-begin+1];
     SCIP_Real *rhss = new SCIP_Real[end-begin+1];
     SCIPlpiGetSides(lp,begin,end,lhss,rhss);
@@ -1093,9 +864,6 @@ int    begin,int end
             else
                 sense[i] = 'E';
     }
-    //PWOF change 23-08-2013
-    //delete lhss;
-    //delete rhss;
     delete[] lhss;
     delete[] rhss;
     return 0;
@@ -1145,7 +913,6 @@ int begin,  int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetcols" << std::endl;
     SCIPlpiGetCols(lp,begin,end,NULL,NULL,nzcnt,cmatbeg,cmatind,cmatval);
     *surplus = cmatspace - *nzcnt;
     return 0;
@@ -1194,7 +961,6 @@ int begin,  int end
 
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetrows" << std::endl;
     SCIPlpiGetRows(lp,begin,end,NULL,NULL,nzcnt,rmatbeg,rmatind,rmatval);
     *surplus = rmatspace - *nzcnt;
     return 0;
@@ -1235,7 +1001,6 @@ double *objval_p, double *x, double *pi, double *slack, double *dj
    status = solution (x, slack, pi, dj);
 #ifndef XPRESS11
    if( pi && lp->objsen== -1 ){
-//     fprintf(stderr,"INFO: changing dual variable signs\n");
        getipv(N_NROW,&k);
        while(k--) pi[k] = -pi[k];
    }
@@ -1274,7 +1039,6 @@ double *objval_p, double *x, double *pi, double *slack, double *dj
 
    
 #ifdef VSCIP
-    //std::cout << "\nJJsolution" << std::endl;
     *lpstat_p = JJgetstat(lp);
     SCIPlpiGetSol(lp,objval_p,x,pi,NULL/*slack*/,dj);
     JJgetslack(lp,slack, 0,JJgetmar(lp)-1);
@@ -1316,7 +1080,6 @@ JJLPptr lp)
 // End adding PWOF   
    
 #ifdef VSCIP    // Salomé modified 31/01/2014
-    //std::cout << "\nJJgetstat" << std::endl;
     int m_stat = SCIPlpiGetInternalStatus(lp);
 	#ifdef soplex    
     switch( m_stat )  //soplex
@@ -1382,7 +1145,6 @@ double *objval_p)
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetobjval" << std::endl;
     SCIPlpiGetObjval(lp,objval_p);    
     return 0;
 #endif
@@ -1446,15 +1208,12 @@ int    begin,int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetx" << std::endl;
     SCIP_Real *primsol = new SCIP_Real[JJgetmac(lp)];
     SCIPlpiGetSol(lp,NULL,primsol,NULL,NULL,NULL);
 
     for (int i = begin; i <= end; i++) {
         x[i-begin] = primsol[i];        
     }
-    //PWOF change 23-08-2013
-    //delete primsol;
     delete[] primsol;
     return 0;
 #endif
@@ -1518,16 +1277,12 @@ int    begin,int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetpi" << std::endl;
-
     SCIP_Real *dualsol = new SCIP_Real[JJgetmar(lp)];
     SCIPlpiGetSol(lp,NULL,NULL,dualsol,NULL,NULL);
 
     for (int i = begin; i <= end; i++) {
         pi[i-begin] = dualsol[i];        
     }
-    //PWOF change 23-08-2013
-    //delete dualsol;    
     delete[] dualsol;    
     return 0;
 #endif
@@ -1591,7 +1346,6 @@ int    begin,int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetslack" << std::endl;//  Ax <= b => slack = b - Ax*
     SCIP_Real *rhs = new SCIP_Real[end-begin+1];
     SCIP_Real *lhs = new SCIP_Real[end-begin+1];
     SCIP_Real *activ = new SCIP_Real[JJgetmar(lp)];
@@ -1603,10 +1357,6 @@ int    begin,int end
         else
             slack[i-begin] = rhs[i-begin] - activ[i];        
     }
-    //PWOF change 23-08-2013
-    //delete activ;    
-    //delete rhs;
-    //delete lhs;
     delete[] activ;    
     delete[] rhs;
     delete[] lhs;
@@ -1672,15 +1422,12 @@ int    begin,int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetdj" << std::endl;
     SCIP_Real *redcost = new SCIP_Real[JJgetmac(lp)];
     SCIPlpiGetSol(lp,NULL,NULL,NULL,NULL,redcost);
 
     for (int i = begin; i <= end; i++) {
         dj[i-begin] = redcost[i];
     }
-    //PWOF change 23-08-2013
-    //delete redcost;
     delete[] redcost;
     return 0;
 #endif
@@ -1720,7 +1467,6 @@ JJLPptr lp)
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetitc" << std::endl;
     int iterations;
     SCIPlpiGetIterations(lp,&iterations);    
     return iterations;
@@ -1752,7 +1498,6 @@ JJLPptr lp)
 // End adding PWOF
 
 #ifdef VSCIP
-    //std::cout << "\nJJgetitci" << std::endl;
     int status = JJgetstat(lp);
     if (( status != 1 ) && (status != 2) && (status != 3))
         return 0;
@@ -1796,7 +1541,6 @@ int *cstat, int *rstat
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetbase" << std::endl;
     SCIPlpiGetBase(lp,cstat,rstat);
     return 0;
 #endif
@@ -1837,7 +1581,6 @@ int *cstat, int *rstat
    
    
 #ifdef VSCIP
-    //std::cout << "\nJJloadbase" << std::endl;
     SCIPlpiSetBase(lp,cstat,rstat);
     return 0;
 #endif
@@ -1889,7 +1632,6 @@ char **colname, char **rowname
 
    
 #ifdef VSCIP
-    //std::cout << "\nJJaddrows" << std::endl;
     if (ccnt != 0)   // add cols
     {
         int* mybeg = new int[ccnt + 1];
@@ -1931,9 +1673,6 @@ char **colname, char **rowname
 
     SCIPlpiAddRows(lp,rcnt,rowLower,rowUpper,rowname,nzcnt,rmatbeg,rmatind,rmatval);
 
-    //PWOF change 23-08-2013
-    //delete rowLower;
-    //delete rowUpper;
     delete[] rowLower;
     delete[] rowUpper;
     return 0;
@@ -1966,7 +1705,6 @@ int    begin,int end
        fprintf(stderr,"JJ WARNING: not space in del-rows!!!\n");
        return 1;
    }
-//   for(i=begin;i<=end;i++) mindex[i] = i;   //  it was way before!!!
    for(i=begin;i<=end;i++) mindex[i-begin] = i;    // Rafael marz 2001
    status = delrows(nrows, mindex);
    free( mindex );
@@ -1997,7 +1735,6 @@ int    begin,int end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJdelrows" << std::endl;
     SCIPlpiDelRows(lp,begin,end);
     return 0;
 #endif
@@ -2087,7 +1824,6 @@ int    *delstat
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJdelsetrows" << std::endl;
     SCIPlpiDelRowset(lp,delstat);
     return 0;
 #endif
@@ -2132,7 +1868,6 @@ char **colname
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJaddcols" << std::endl;
     SCIPlpiAddCols(lp,ccnt,obj,lb,ub,colname,nzcnt,cmatbeg,cmatind,cmatval);
     return 0;
 #endif
@@ -2164,7 +1899,6 @@ int    begin,int end
        fprintf(stderr,"JJ WARNING: not space for del-columns!!!\n");
        return 1;
    }
-//   for(i=begin;i<=end;i++) mindex[i] = i;  //   before!!!
    for(i=begin;i<=end;i++) mindex[i-begin] = i;    // Rafael marzo 2001
    status = delcols(ncols, mindex);
    free( mindex );
@@ -2196,7 +1930,6 @@ int    begin,int end
 
    
 #ifdef VSCIP
-    //std::cout << "\nJJdelcols" << std::endl;
     SCIPlpiDelCols(lp,begin,end);
     return 0;
 #endif
@@ -2288,7 +2021,6 @@ int    *delstat
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJdelsetcols" << std::endl;
     SCIPlpiDelColset(lp,delstat);
     return 0;
 #endif
@@ -2341,7 +2073,6 @@ double newvalue
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJchgcoef" << std::endl;
     int ind;
 
     if( i == -1 ) {        
@@ -2422,7 +2153,6 @@ double *bd
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJchgbds" << std::endl;
     SCIP_Real lb;
     SCIP_Real ub;
     SCIP_Real lbAux;
@@ -2453,7 +2183,6 @@ double *bd
 
 int JJlpwrite( 
 JJLPptr lp,
-//char *filename
 std::string filename
 )
 {
@@ -2489,7 +2218,6 @@ std::string filename
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJlpwrite\n");
     SCIPlpiWriteLP(lp,filename.c_str());
     return 0;
 #endif
@@ -2539,7 +2267,6 @@ char *filename
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJmpswrite" << std::endl;
     SCIPlpiWriteLP(lp,filename);
     return 0;
 #endif
@@ -2582,11 +2309,8 @@ int       end
 
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetbdl" << std::endl;
     double *xub = new double[end-begin+1];
     SCIPlpiGetBounds(lp,begin,end,xlb,xub);
-    //PWOF change 23-08-2013
-    //delete xub;
     delete[] xub;
     return 0;
 #endif
@@ -2628,11 +2352,8 @@ int       end
 // End adding PWOF
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetbdu\n");
     double *xlb = new double[end-begin+1];
     SCIPlpiGetBounds(lp,begin,end,xlb,xub);
-    //PWOF change 23-08-2013
-    //delete xlb;
     delete[] xlb;
     return 0;
 #endif
@@ -2648,8 +2369,6 @@ char     *ctype
 #endif
 
 #ifdef CPLEX5
-//   return CPXloadctype (Env, lp, ctype);
-//   Modified on December 2006 to link with CPLEX 10
    return CPXcopyctype (CPLEXv::Env, lp, ctype);
 
 #endif
@@ -2756,7 +2475,6 @@ int    begin,int end
 #endif
    
 #ifdef VSCIP
-    //std::cout << "\nJJgetmx" << std::endl;
     JJgetx(lp,x,begin,end);
     return 0;
 #endif
@@ -2785,198 +2503,10 @@ JJLPptr lp)
 #endif
    
 #ifdef VSCIP
-    //std::cout << "\nJJmipoptimize" << std::endl;
     JJoptimize(lp);
     return 0;
 #endif
 }
-
-/* Not used
-JJLPptr JJloadmprob (
-char *probname,
-int numcols, int numrows, int numrims, int objsen,
-double *obj, double *rhs,
-char *sense,
-int *matbeg, int *matcnt, int *matind,
-double *matval, double *lb, double *ub, double *rngval,
-int *freerowind, int *rimtype, int *rimbeg, int *rimcnt, int *rimind,
-double *rimval,
-char *dataname, char *objname, char *rhsname, char *rngname, char *bndname,
-char **colname,
-char *colnamestore,
-char **rowname,
-char *rownamestore,
-char **rimname,
-char *rimnamestore,
-int colspace, int rowspace, int nzspace,
-int rimspace, int rimnzspace,
-unsigned colnamespace, unsigned rownamespace, unsigned rimnamespace,
-char *ctype
-)
-{
-#ifdef CPLEX3
-    return loadmprob (probname, numcols, numrows, numrims,
-                    objsen, obj, rhs, sense, matbeg, matcnt,
-                    matind, matval, lb, ub, rngval,
-                    freerowind, rimtype, rimbeg, rimcnt, rimind, rimval,
-                    dataname, objname, rhsname, rngname, bndname,
-                    colname, colnamestore, rowname, rownamestore,
-                    rimname, rimnamestore, colspace, rowspace, nzspace,
-                    rimspace, rimnzspace, colnamespace, rownamespace,
-                    rimnamespace,ctype);
-#endif
-
-
-#ifdef CPLEX5    
-   int  status;
-   char errmsg[1024];
-   JJLPptr lp;
-
-   if( CPLEXv::Env==NULL ){
-       CPLEXv::Env = CPXopenCPLEX (&status);
-       if ( CPLEXv::Env == NULL ) {
-           CPXgeterrorstring (CPLEXv::Env, status, errmsg);
-           fprintf (stderr, "JJ ERROR: not CPLEX environment.\n%s",errmsg);
-           return(NULL);
-       }
-       lpJJ = 0;
-   }
-
-  // lp = CPXloadmipprob (Env, probname, numcols, numrows, numrims,
-  //                 objsen, obj, rhs, sense, matbeg, matcnt,
-  //                  matind, matval, lb, ub, rngval,
-  //                  freerowind, rimtype, rimbeg, rimcnt, rimind, rimval,
-  //                  dataname, objname, rhsname, rngname, bndname,
-  //                  colname, colnamestore, rowname, rownamestore,
-  //                  rimname, rimnamestore, colspace, rowspace, nzspace,
-  //                  rimspace, rimnzspace, colnamespace, rownamespace,
-  //                  rimnamespace,ctype);
-
-//  Modified on December 2006 to link with CPLEX 10
-
-    lp = CPXcreateprob (CPLEXv::Env, &status, probname);
-    status = CPXcopylp (CPLEXv::Env, lp, numcols, numrows, objsen, obj, rhs,
-                     sense, matbeg, matcnt, matind, matval, lb, ub, rngval);
-    status = CPXcopyctype (CPLEXv::Env, lp, ctype);
-    
-  
-  
-   if( lp ) lpJJ++;
-   return lp;
-#endif
-
-#ifdef XPRESS
-    int k,total,ngents;
-    int *mgcols;
-
-    if( lpJJ == 0 ){
-        if( initlz(XOSLDIR,XOSLMEM) ){
-            fprintf (stderr, "JJ ERROR: XPRESS not opened.\n");
-            return NULL;
-        }
-    }
-    if( current_lp != NULL ){
-        if( savmat( &(current_lp->ref) ) ){
-            std::cout << "JJ WARNING: not savmat()" << std::endl;
-            return NULL;
-        }
-    }
-    current_lp = (JJLPptr) malloc(sizeof(struct JJLP));
-    if( current_lp == NULL ){
-        std::cout << "JJ WARNING: not memory" << std::endl;
-        return NULL;
-    }
-    current_lp->ref    = 0;
-    current_lp->objsen = objsen;
-
-    seticv(N_NCXTRA,colspace-numcols);
-    seticv(N_NRXTRA,rowspace-numrows);
-    for(total=k=0;k<numcols;k++) total += matcnt[k];
-    seticv(N_NMXTRA,nzspace-total);
-
-    mgcols = (int *)malloc( numcols * sizeof(int) );
-    if( mgcols==NULL ){
-        free( current_lp );
-        return NULL;
-    }
-    for(ngents=k=0;k<numcols;k++)
-        if( ctype[k]=='B' || ctype[k]=='I')
-            mgcols[ngents++] = k;
-
-    //seticv(N_NGXTRA,ngents);
-
-    if( loadglobal(probname,numcols,numrows,sense,rhs,NULL,
-                  obj,matbeg,matcnt,matind,matval,lb,ub,
-                  ngents,0,ctype,mgcols,NULL,NULL,NULL,NULL,NULL) ){
-        free( current_lp );
-        current_lp = NULL;
-    } else
-        lpJJ++;
-    free( mgcols );
-    return current_lp;
-#endif
-
-#ifdef XPRESS_13
-    int k,total,ngents;
-    int *mgcols;
-
-    if( lpJJ == 0 ){
-        if( initlz(XOSLDIR,XOSLMEM) ){
-            fprintf (stderr, "JJ ERROR: XPRESS not opened.\n");
-            return NULL;
-        }
-    }
-    if( current_lp != NULL ){
-        if( savmat( &(current_lp->ref) ) ){
-            std::cout << "JJ WARNING: not savmat()" << std::endl;
-            return NULL;
-        }
-    }
-    current_lp = (JJLPptr) malloc(sizeof(struct JJLP));
-    if( current_lp == NULL ){
-        std::cout << "JJ WARNING: not memory" << std::endl;
-        return NULL;
-    }
-    current_lp->ref    = 0;
-    current_lp->objsen = objsen;
-
-    seticv(N_NCXTRA,colspace-numcols);
-    seticv(N_NRXTRA,rowspace-numrows);
-    for(total=k=0;k<numcols;k++) total += matcnt[k];
-    seticv(N_NMXTRA,nzspace-total);
-
-    mgcols = (int *)malloc( numcols * sizeof(int) );
-    if( mgcols==NULL ){
-        free( current_lp );
-        return NULL;
-    }
-    for(ngents=k=0;k<numcols;k++)
-        if( ctype[k]=='B' || ctype[k]=='I')
-            mgcols[ngents++] = k;
-
-    //seticv(N_NGXTRA,ngents);
-
-    if( loadglobal(probname,numcols,numrows,sense,rhs,NULL,
-                  obj,matbeg,matcnt,matind,matval,lb,ub,
-                  ngents,0,ctype,mgcols,NULL,NULL,NULL,NULL,NULL) ){
-        free( current_lp );
-        current_lp = NULL;
-    } else
-        lpJJ++;
-    free( mgcols );
-    return current_lp;
-#endif
-
-    
-#ifdef VSCIP
-    //std::cout << "\nJJloadmprob" << std::endl;
-    return JJloadprob (probname,numcols,numrows,numrims,objsen,obj,rhs,sense,matbeg,matcnt,matind,
-          matval,lb,ub,rngval,freerowind,rimtype,rimbeg,rimcnt,rimind,rimval,dataname,objname,rhsname,
-          rngname,bndname,colname,colnamestore,rowname,rownamestore,rimname,rimnamestore,colspace,rowspace,
-          nzspace,rimspace,rimnzspace,colnamespace,rownamespace,rimnamespace);
-#endif
-}
-*/
 
 int JJbinvrow (
 JJLPptr   lp,
@@ -3005,7 +2535,6 @@ double    *y
 // End adding PWOF
     
 #ifdef VSCIP
-    //std::cout << "\nJJbinvrow" << std::endl;
     SCIPlpiGetBInvRow(lp,i,y, NULL, NULL);
     return 0;
 #endif
@@ -3039,12 +2568,9 @@ double    *z
 
     
 #ifdef VSCIP
-    //std::cout << "\nJJbinvarow" << std::endl;
     double *binvrow = new SCIP_Real[JJgetmar(lp)];
     SCIPlpiGetBInvRow(lp,i,binvrow, NULL, NULL);
     SCIPlpiGetBInvARow(lp,i,binvrow,z, NULL, NULL);
-    //PWOF change 23-08-2013
-    //delete binvrow;
     delete[] binvrow;
     return 0;
 #endif
