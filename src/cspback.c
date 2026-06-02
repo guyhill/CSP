@@ -16,7 +16,7 @@
 
 #include <stdlib.h>
 #include "cspback.h"
-#include "cspmain.h"
+//#include "cspmain.h"
 
 static int (*external_stop)(void) = {NULL};
 static int (*external_heur)(void) = {NULL};
