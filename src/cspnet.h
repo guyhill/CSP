@@ -1,9 +1,7 @@
 void   load_network(double *,char);
 void   unload_network(void);
-void   bounding_bds(int);
 void   bounding_1(void);
 double protection_level(VARIABLE *,int,int*,VARIABLE**,double*,double*,char);
-int    protected1(double *);
 int    protected_flow(int,VARIABLE**);
 
 /* for multi-capacity separation */

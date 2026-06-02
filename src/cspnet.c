@@ -33,9 +33,11 @@
 /* PROTOTYPES OF FUNCTIONS */
 
 
+int    protected1(double *);
 
 /* PRIVATE GLOBAL DATA TO INTERPRETATE THE DUAL SOLUTION */
 
+int           row_inside(CONSTRAINT *,int,CONSTRAINT **);
 static int    *net2cell;   /* cell number in the network of a node         */
 static int    *cell2net;   /* node associated with a cell of the network   */
 static int    *net2sum;    /* sum number in the network of a node          */
