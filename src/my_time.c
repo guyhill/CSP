@@ -20,7 +20,4 @@
 #include <time.h>
 #include "my_time.h"
 
-
-float seconds(void) {
-    return( (float)clock()/CLOCKS_PER_SEC );
-}
+float seconds(void) { return ((float)clock() / CLOCKS_PER_SEC); }

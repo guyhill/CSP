@@ -13,7 +13,6 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-
 #include <stdlib.h>
 #include "cspback.h"
 
@@ -22,37 +21,38 @@ static int (*external_heur)(void) = {NULL};
 static int (*external_exit)(int) = {NULL};
 static int (*external_time)(void) = {NULL};
 
-int CSPstoptime()
-{
-    if ( external_time==NULL )
+int CSPstoptime() {
+    if (external_time == NULL) {
         return 0;
-    else
+    } else {
         return (*external_time)();
+    }
 }
 
-int CSPstopcondition()
-{
-    if( external_stop==NULL )
+int CSPstopcondition() {
+    if (external_stop == NULL) {
         return 0;
-    else
+    } else {
         return (*external_stop)();
+    }
 }
 
-int CSPnewsolution()
-{
-    if( external_heur==NULL )
+int CSPnewsolution() {
+    if (external_heur == NULL) {
         return 0;
-    else
+    } else {
         return (*external_heur)();
+    }
 }
 
 int CSPexit(int flag)
 
 {
-    if( external_exit==NULL )
+    if (external_exit == NULL) {
         return 0;
-    else
+    } else {
         return (*external_exit)(flag);
+    }
 }
 
 int CSPdefinestop(int (*stop)(void))
@@ -76,8 +76,7 @@ int CSPdefineexit(int (*fexit)(int))
     return 0;
 }
 
-int CSPdefinestoptime(int (*fstoptime)(void))
-{
+int CSPdefinestoptime(int (*fstoptime)(void)) {
     external_time = fstoptime;
     return 0;
 }

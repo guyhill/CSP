@@ -1,3 +1,2 @@
-double     violation_gomory(CONSTRAINT *,int,VARIABLE **);
-double     get_coeficient_gomory(VARIABLE *,CONSTRAINT *);
-
+double violation_gomory(CONSTRAINT *, int, VARIABLE **);
+double get_coeficient_gomory(VARIABLE *, CONSTRAINT *);
