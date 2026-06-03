@@ -68,6 +68,68 @@ void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,
      * al chiamante tutti i parametri di ingresso sono invariati.  *
      **************************************************************/
 
+    /* The comment block below was produced from the Italian 
+     * original (see above) by ChatGPT.
+     */
+    
+    /***************************************************************
+     * This subroutine solves the "0-1 KNAPSACK PROBLEM" with      *
+     * real-valued parameters:                                     *
+     *                                                             *
+     *   maximize Z = P[1]*X[1] + ... + P[N]*X[N]                  *
+     *   subject to                                                *
+     *                W[1]*X[1] + ... + W[N]*X[N] <= C,            *
+     *                X[J] = 0 or 1 for J = 1, ..., N.             *
+     *                                                             *
+     * The program is a modified version of the subroutine MT1C.   *
+     *                                                             *
+     * The input data for the problem must satisfy the following   *
+     * conditions:                                                 *
+     *   1) 2 <= N <= JDIM-2;                                      *
+     *   2) P[J], W[J], C are positive real numbers;               *
+     *   3) MAX(W[J]) <= C;                                        *
+     *   4) W[1] + ... + W[N] > C;                                 *
+     *   5) P[J]/W[J] >= P[J+1]/W[J+1] for J = 1, ..., N-1.        *
+     *                                                             *
+     * MT1RC calls one subroutine: CHMT1RC.                        *
+     *                                                             *
+     * Communication with the program is possible only through     *
+     * the parameter list.                                         *
+     * The program was written in the C programming language;      *
+     * no machine-dependent constants have been used.              *
+     * The program was tested on a DIGITAL VAXstation 2000.        *
+     *                                                             *
+     * MT1RC requires 10 arrays:                                   *
+     *   P, W, X, XX, MIN, PSIGN, WSIGN, ZSIGN, CRC, CRP           *
+     * whose size must be at least N+2.                            *
+     *                                                             *
+     * The main input parameters are:                              *
+     *   N    = number of items;                                   *
+     *   P[J] = profit of item J (J = 1, ..., N);                  *
+     *   W[J] = weight of item J (J = 1, ..., N);                  *
+     *   C    = capacity;                                          *
+     *   EPS  = tolerance (two positive values Q and R are         *
+     *          considered equal if ABS(Q-R)/MAX(Q,R) <= EPS);     *
+     *   JDIM = size of the 10 arrays;                             *
+     *   JCK  = 1 if input-data checking is requested,             *
+     *          0 otherwise.                                       *
+     *                                                             *
+     * The main output parameters are:                             *
+     *   Z =    value of the optimal solution if Z > 0;            *
+     *          input-data error (when JCK = 1) if Z < 0;          *
+     *          in that case, condition number -Z has been         *
+     *          violated.                                          *
+     *   X[J] = 1 if item J belongs to the optimal solution,       *
+     *          0 otherwise.                                       *
+     *                                                             *
+     * The arrays XX, MIN, PSIGN, WSIGN, ZSIGN, CRC, and CRP       *
+     * are auxiliary work arrays.                                  *
+     *                                                             *
+     * The parameters N, X, JDIM, JCK, XX, and ZSIGN are integers; *
+     * the parameters P, W, C, Z, MIN, PSIGN, WSIGN, CRC, CRP,     *
+     * and EPS are real-valued. Upon return to the caller, all     *
+     * input parameters remain unchanged.                          *
+     ***************************************************************/
     int LL, KK, NM2, JJ, LOLD, II, JJ1, JP1, NEL, J1, IN, J, NN, N1;
     double LIM, LIM1, IP, MINK, IU, CH, CHS, PROFIT, R, DIFF, T, A, B, EPSP;
 
