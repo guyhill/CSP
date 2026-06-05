@@ -130,6 +130,23 @@ void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,
      * and EPS are real-valued. Upon return to the caller, all     *
      * input parameters remain unchanged.                          *
      ***************************************************************/
+    
+    
+    /*
+     * possible improvements:
+     * 0. Document all variables
+     * 1. Replace *Z with return value
+     * 2. Get rid of the goto's
+     * 3. Separate function into multiple logical units. Function as it is,
+     *    is much too long to be easily readable, even apart from the spaghetti
+     *    introduced by the goto's
+     * 4. Remove the 5 double and 2 int arrays in the parameter list, and
+     *    instead allocate this scratch space within this function. Alternatively,
+     *    if the overhead associated with repeated allocations is problematic,
+     *    replace these 7 arguments by a single argument with a pointer to 
+     *    scratch space of sufficient size.
+     * 5. Simplify the code. Current code is overly branchy and verbose.
+     */
     int LL, KK, NM2, JJ, LOLD, II, JJ1, JP1, NEL, J1, IN, J, NN, N1;
     double LIM, LIM1, IP, MINK, IU, CH, CHS, PROFIT, R, DIFF, T, A, B, EPSP;
 
@@ -138,13 +155,15 @@ void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,
         CHMT1RC(N, P, W, C, Z, JDIM);
     }
 
-    if (*Z == -4) {
+    if (*Z == -4) { // This can only happen if JCK == 1; hence CHMT1RC has been
+                    // called
         *Z = 0;
         for (J = 1; J <= N; J++) {
-            if (W[J] > 0) {
+            if (W[J] > 0) { // This is always the case. CMT1RC sets *Z to -4
+                            // only if no other check fails.
                 X[J] = 1;
                 *Z += W[J];
-            } else {
+            } else {        // Hence, this else is superfluous.
                 X[J] = 0;
             }
         }
@@ -160,7 +179,8 @@ void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,
     IP = 0.0;
     CHS = C + EPS * C;
     for (LL = 1; LL <= N; LL++) {
-        if (W[LL] <= CHS) {
+        if (W[LL] <= CHS) { // You could include this check in the for 
+                            // statement's stop condition.
             IP += P[LL];
             CHS -= W[LL];
         } else {
@@ -196,13 +216,18 @@ void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,
         LOLD = N;
         JJ = 1;
         NM2 = N - 2;
-        goto L180;
+        goto L180;  // Can be eliminated by reversing the logic of the enclosing
+                    // if statement and moving the code between L80 and L180
+                    // to below L180
     }
-    *Z = IP;
+    *Z = IP;        // If you arrive here, items 1..LL fit exactly in the 
+                    // knapsack. Since items are sorted according to profit per 
+                    // unit weight, the optimal solution in this case consists 
+                    // of items 1..LL
     for (J = 1; J <= LL; J++) {
         X[J] = 1;
     }
-    NN = LL + 1;
+    NN = LL + 1; // Superfluous: by this point J = LL + 1
     for (J = NN; J <= N; J++) {
         X[J] = 0;
     }
@@ -277,22 +302,23 @@ L180:
 
     // Save the current solution
 
-    II = JJ;
-    CRC[II] = CH;
-    CRP[II] = PROFIT;
+    II = JJ; // JJ = 1 first time we get here
+    CRC[II] = CH; // ch = c*(1+e)
+    CRP[II] = PROFIT; 
     CRC[II + 1] = CRC[II] - W[II];
     CRP[II + 1] = CRP[II] + P[II];
     NN = LL - 1;
     J1 = LL + 1;
-    if (NN >= II) {
+    if (NN >= II) { // Check is superfluous as for loop does same check before
+                    // first iteration
         for (J = II; J <= NN; J++) {
-            JP1 = J + 1;
+            JP1 = J + 1; // Better use J + 1 directly in two following statements
             CRC[J + 2] = CRC[JP1] - W[JP1];
             CRP[J + 2] = CRP[JP1] + P[JP1];
         }
     }
     PROFIT = CRP[LL + 1];
-    for (J = J1; J <= LOLD; J++) {
+    for (J = J1; J <= LOLD; J++) { 
         WSIGN[J] = 0.0;
         PSIGN[J] = 0.0;
         ZSIGN[J] = J;
@@ -308,7 +334,7 @@ L180:
     }
     if (LL > NM2) {
         II = N;
-        goto L260;
+        goto L260; // replace with else { <everything up to L260> }
     }
     CRC[LL + 2] = CRC[LL + 1];
     CRP[LL + 2] = CRP[LL + 1];
@@ -318,7 +344,7 @@ L180:
             XX[N] = 1;
         }
         II = N - 1;
-        goto L260;
+        goto L260; // replace with else { <everything up to L260> }
     }
     II = LL + 2;
     if (CRC[LL + 2] >= MIN[II - 1]) {
@@ -345,11 +371,13 @@ L290:
     // Backtrack
 
     NN = II - 1;
-    if (NN == 0) {
+    if (NN == 0) { // Superfluous. If NN == 0, the for loop after this 
+                   // does not run. Translation from a language where this
+                   // is not the case?
         return;
     }
     for (J = 1; J <= NN; J++) {
-        KK = II - J;
+        KK = II - J; // Needlessly complicated. Just run KK from II - 1 down to 1.
         if (XX[KK] == 1) {
             goto L310;
         }
@@ -381,23 +409,23 @@ L330:
     DIFF = W[NN] - W[KK];
     if (DIFF == 0.0) {
 
-    L340:
+    L340:   // trivial to eliminate with minor code duplication
 
         NN++;
         goto L330;
     }
     if (DIFF > 0.0) {
         if (DIFF > R) {
-            goto L340;
+            goto L340; // Replace with NN++; goto L330
         }
-        if ((*Z + EPSP) >= (PROFIT + P[NN])) {
+        if ((*Z + EPSP) >= (PROFIT + P[NN])) { // Combine with previous if
             goto L340;
         }
         *Z = PROFIT + P[NN];
         for (J = 1; J <= KK; J++) {
             X[J] = XX[J];
         }
-        JJ = KK + 1;
+        JJ = KK + 1; // Superfluous. J == KK + 1 at this point.
         for (J = JJ; J <= N; J++) {
             X[J] = 0;
         }
@@ -414,7 +442,7 @@ L330:
     if (DIFF < 0.0) {
         T = CH - W[NN];
         if (T < MIN[NN]) {
-            goto L340;
+            goto L340;    // Replace with NN++; goto L330
         }
         if ((*Z + EPSP) >= (PROFIT + P[NN] + T * P[NN + 1] / W[NN + 1])) {
             goto L290;
@@ -437,9 +465,40 @@ L330:
         LOLD = NN;
         goto L80;
     }
-    return;
+    return; // I don't think this statement can be reached.
 }
 
+/* Checks the input. The following checks are performed:
+ *   1) 2 <= N <= JDIM-2;
+ *   2) P[J], W[J], C are positive real numbers;
+ *   3) MAX(W[J]) <= C;
+ *   4) W[1] + ... + W[N] > C;
+ *   5) P[J]/W[J] >= P[J+1]/W[J+1] for J = 1, ..., N-1.
+ *   
+ *   Return value in Z:
+ *   If check 1) fails, return -1
+ *   If check 2) fails for any J, return -2
+ *   If check 3) fails for any J, return -3
+ *   If check 5) fails for any J, return -5
+ *   If multiple checks of 2), 3) and 5) fail, return that error number
+ *   associated with the lowest value of J. If multiple checks fail for the
+ *   lowest J, return the error value with the lowest absolute value.
+ *   If no other checks fail and check 4) fails, return -4
+ *   If no checks fail, don't change the value of *Z.
+ *   
+ *   Possible improvements:
+ *   1. Replace *Z by the return value of the function
+ *   2. Remove the goto (trivial to do with no code duplication once 1 is done)
+ *   3. Return 0 if no checks fail. As it stands, function is dependent on
+ *      state outside the function to report success.
+ *   4. Do all checks completely, and as separate functions. The idea would be
+ *      to perform all checks for all inputs rather than report only the first
+ *      failed check
+ *   5. Automatically correct for checks 3) or 5) failing (by removing items
+ *      with excessive weight - as they don't fit in the knapsack anyway - and
+ *      sorting the items according to price per unit weight)
+ */
+ 
 static void CHMT1RC(int N, double *P, double *W, double C, double *Z, int JDIM)
 
 {
