@@ -1,4 +1,7 @@
-#include <scip/scip.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "../../src/cspmain.h"
 
 // Return codes.
@@ -100,7 +103,6 @@ int read_problem(const char *input_filename, csp_problem_t *p) {
     p->lpl = (double *)malloc(p->INumVar * sizeof(double));
     p->upl = (double *)malloc(p->INumVar * sizeof(double));
 
-    std::string tmpname;
     for (int i = 0; i < p->INumVar; i++) {
         double d_, lb_, ub_, lpl_, upl_, spl_;
         int w_, x_;
