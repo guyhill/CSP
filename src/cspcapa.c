@@ -13,15 +13,15 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspcapa.h"
 #include "cspsep.h"
 #include "cspnet.h"
 #include "cspback.h"
+#include "cspcapa.h"
 
 /* -----------------------  CAPACITY SEPARATION --------------------------*/
 

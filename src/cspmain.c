@@ -12,14 +12,15 @@
 /*                                                  */
 /* Last modified September 10, 2001                 */
 /****************************************************/
-// #define STAMP
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <iostream>
+#include <fstream>
+
 #include "cspdefns.h"
-#include "cspmain.h"
+#include "cspglob2.h"
+#include "IProgressListener.h"
 #include "cspprep.h"
 #include "cspnet.h"
 #include "cspbranc.h"
@@ -30,8 +31,8 @@
 #include "cspprice.h"
 #include "cspback.h"
 #include "cspdebug.h"
-#include "cspglob2.h"
 #include "my_time.h"
+#include "cspmain.h"
 
 static std::streambuf *psbuf, *backup;
 static std::ofstream filestr;
@@ -73,7 +74,6 @@ int PPCSPrelbounds(int, int *, double *, double *, char);
 
 // namespace SCIPv
 namespace SCIPv {
-SCIP *_scip;
 void CSPSetFileNames(const char *dir) { PPCSPSetFileNames(dir); }
 void CSPFreeFileNames() { PPCSPFreeFileNames(); }
 void CSPSetDoubleConstant(const int VarNumber, double VarValue) {

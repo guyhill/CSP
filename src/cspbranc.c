@@ -17,12 +17,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "cspsolve.h"
-#include "cspbranc.h"
 #include "cspdebug.h"
 #include "cspback.h"
+#include "cspbranc.h"
 
 /*  PROTOTYPES OF FUNCTIONS  */
 

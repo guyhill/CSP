@@ -13,16 +13,16 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspprep.h"
 #include "cspnet.h"
 #include "cspsep.h"
 #include "cspcapa.h"
 #include "cspback.h"
+#include "cspprep.h"
 
 int l0u0, l1u0, l0u1, l1u1;
 

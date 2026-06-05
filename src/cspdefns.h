@@ -11,6 +11,8 @@
 /****************************************************/
 
 /* Definitions for SDC */
+#ifndef CSPDEFNS_H
+#define CSPDEFNS_H
 
 #define VERSION "1.0.0.4" /* software current version                */
 
@@ -86,3 +88,5 @@ typedef struct {
     double level;   /* protection level value                    */
     int study;      /* 1=not known autoprotection                */
 } PROT_LEVEL;
+
+#endif // #ifndef CSPDEFNS_H

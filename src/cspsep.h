@@ -1,3 +1,5 @@
+#include "cspdefns.h"
+
 void separa(int *, CONSTRAINT **);
 double violated(CONSTRAINT *);
 int new_row(CONSTRAINT *);

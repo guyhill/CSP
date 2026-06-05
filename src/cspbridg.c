@@ -13,17 +13,16 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-
-#include "cspbridg.h"
 #include "cspnet.h"
 #include "cspsep.h"
 #include "cspback.h"
+#include "cspbridg.h"
 
 static CONSTRAINT *bridge_constraint(int, VARIABLE **, int);
 static double bridge_lhs(int, int, VARIABLE **, VARIABLE **, double *, double *,

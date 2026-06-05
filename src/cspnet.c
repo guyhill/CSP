@@ -13,13 +13,14 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "jjsolver.h"
-#include "cspnet.h"
 #include "cspback.h"
+#include "cspnet.h"
 
 /* PROTOTYPES OF FUNCTIONS */
 
@@ -536,8 +537,8 @@ void free_col(int index, double *bd)
     JJgetbdl(Nlp, bd, j, j);
     JJgetbdu(Nlp, bd + 1, j, j);
     ind[0] = ind[1] = j;
-    value[0] = -SCIPlpiInfinity(Nlp);
-    value[1] = SCIPlpiInfinity(Nlp);
+    value[0] = -JJinfinity(Nlp);
+    value[1] = JJinfinity(Nlp);
     JJchgbds(Nlp, 2, ind, lu, value);
 }
 

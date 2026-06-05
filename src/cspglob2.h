@@ -9,7 +9,8 @@
 /*                                                  */
 /* Last modified 15 July 1995                       */
 /****************************************************/
-#include <string>
+#include "cspdefns.h"
+
 /* Global variables for UGFLP */
 
 extern int Rncells;  /* number of cells after reduction      */

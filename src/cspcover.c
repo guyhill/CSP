@@ -13,16 +13,16 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspcover.h"
 #include "mt1rc.h"
 #include "cspsep.h"
 #include "cspback.h"
 #include "cspcapa.h"
+#include "cspcover.h"
 
 static CONSTRAINT *cover_constraint(CONSTRAINT *);
 static int cover_extension(int *, VARIABLE **, CONSTRAINT *, double *,

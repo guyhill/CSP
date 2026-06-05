@@ -17,15 +17,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspdebug.h"
 #include "cspsep.h"
 #include "cspprice.h"
 #include "cspnet.h"
 #include "cspcover.h"
 #include "cspback.h"
 #include "my_time.h"
+#include "cspdebug.h"
 
 static int in_better(VARIABLE *);
 static void testing(CONSTRAINT *);

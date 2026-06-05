@@ -11,6 +11,7 @@
 /****************************************************/
 
 #include "cspdefns.h"
+#include "cspglob2.h"
 
 /* Global variables for CSP */
 

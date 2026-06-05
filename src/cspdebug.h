@@ -1,3 +1,5 @@
+#include "cspdefns.h"
+
 void write_sol(char *);
 void write_heu(const char *);
 int control_ind(void);

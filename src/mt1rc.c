@@ -1,8 +1,6 @@
 #include "mt1rc.h"
 
 static void CHMT1RC(int, double *, double *, double, double *, int);
-// static void MT1RC(int,double *,double *,double,double,double *,int *,
-//      int,int,int *,double *,double *,double *,int *,double *,double *);
 /***********************************************************/
 
 void MT1RC(int N, double *P, double *W, double C, double EPS, double *Z, int *X,

@@ -8,13 +8,10 @@
 /*  M-S Hernï¿½ndez-Garcï¿½a              Spain, 2013                  */
 /*******************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <cstring>
+#include <iostream>
+#include <scip/scip.h>
+
 #include "jjsolver.h"
-#include "cspdefns.h"
-#include "cspglob2.h"
 
 static unsigned int lpJJ = 0; /* for counting the loaded LP's   */
 
@@ -543,4 +540,8 @@ int JJgetbhead(JJLPptr lp, int *head, double *x) {
     std::cout << "\nJJgetbhead?" << std::endl;
     system("pause");
     return 1;
+}
+
+double JJinfinity(JJLPptr lp) {
+  return SCIPlpiInfinity(lp);
 }

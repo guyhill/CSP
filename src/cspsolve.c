@@ -17,21 +17,19 @@
 
 #define MAX_NZ 250000 /* maximum number of non-zero elements in LP*/
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <math.h>
+#include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "jjsolver.h"
 #include "cspback.h"
-#include "cspsolve.h"
 #include "cspprice.h"
 #include "cspnet.h"
-#include "cspdebug.h"
 #include "cspcover.h"
-#include "cspback.h"
 #include "my_time.h"
+#include "cspsolve.h"
 
 /*  PROTOTYPES OF FUNCTIONS */
 

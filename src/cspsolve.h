@@ -1,3 +1,5 @@
+#include "cspdefns.h"
+
 int load_lp(void);
 int unload_lp(void);
 void setup_lp(void);

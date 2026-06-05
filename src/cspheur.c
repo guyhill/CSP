@@ -13,16 +13,16 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
 #include "jjsolver.h"
-#include "cspheur.h"
 #include "cspsep.h"
-#include "cspdebug.h"
 #include "cspback.h"
 #include "my_time.h"
+#include "cspheur.h"
 
 static JJLPptr Nlp; // included by Salome 12/2/2012
 

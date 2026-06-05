@@ -7,8 +7,8 @@
 /*  Interface to LP-solver: SCIP 3.0.1    (VSCIP)                  */
 /*  M-S Hern�ndez-Garc�a              Spain, 2013                  */
 /*******************************************************************/
-
-#include "cspback.h"
+#include <string>
+#include <scip/scip.h>
 
 #define INFBOUND 1.0E+20
 
@@ -26,16 +26,9 @@
 #define JJ_NETINFEASIBLE -2
 #define JJ_NETUNBOUNDED -3
 
-#include <scip/scip.h>
-#include <scip/scipdefplugins.h>
-#include "objscip/objscip.h"
 
 typedef SCIP_LPI *JJLPptr;
 
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <string>
 
 int JJdualopt(JJLPptr), JJmipopt(JJLPptr), JJoptimize(JJLPptr);
 
@@ -201,14 +194,6 @@ int JJsetaggfill(int, int *, int *), JJsetitlim(int, int *, int *),
 int JJloadctype(JJLPptr, char *);
 int JJmipoptimize(JJLPptr);
 int JJgetmx(JJLPptr, double *, int, int);
-/*
-JJLPptr
-   JJloadmprob   (char *, int, int, int, int, double *, double *,
-                 char *, int *, int *, int *, double *, double *,
-                 double *, double *, int *, int *, int *, int *,
-                 int *, double *, char *, char *, char *, char *,
-                 char *, char **, char *, char **, char *, char **,
-                 char *, int, int, int, int, int, unsigned, unsigned,
-                 unsigned, char *);
-*/
 int JJlpiterlimit(/*JJLPptr,*/ int);
+
+double JJinfinity(JJLPptr lp);

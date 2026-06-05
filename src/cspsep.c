@@ -13,20 +13,19 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspsep.h"
 #include "cspcapa.h"
 #include "cspbridg.h"
 #include "cspcover.h"
 #include "cspgomo.h"
 #include "cspbranc.h"
 #include "cspback.h"
-#include "my_time.h"
+#include "cspsep.h"
 
 /*  PROTOTYPES OF FUNCTIONS */
 

@@ -13,13 +13,12 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspprice.h"
 #include "cspsolve.h"
 #include "cspcapa.h"
 #include "cspbridg.h"
@@ -28,6 +27,7 @@
 #include "cspbranc.h"
 #include "cspback.h"
 #include "my_time.h"
+#include "cspprice.h"
 
 /*  PRIVATE GLOBAL VARIABLES */
 

@@ -1,3 +1,5 @@
+#include "cspdefns.h"
+
 int load_branch_tree(void);
 int unload_branch_tree(void);
 int read_prob(void);

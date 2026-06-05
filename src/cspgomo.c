@@ -13,16 +13,17 @@
 /* Last modified September 10, 2001                 */
 /****************************************************/
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
+
 #include "cspdefns.h"
 #include "cspglob2.h"
-#include "cspgomo.h"
 #include "cspcover.h"
 #include "cspsep.h"
 #include "jjsolver.h"
 #include "cspback.h"
+#include "cspgomo.h"
 
 #ifdef GOMORY
 
