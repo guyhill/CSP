@@ -28,6 +28,7 @@ static CONSTRAINT *cover_constraint(CONSTRAINT *);
 static int cover_extension(int *, VARIABLE **, CONSTRAINT *, double *,
                            double *);
 static double kp(int, double *, double *, double, int *);
+static int sort_item(const void *, const void *);
 
 typedef struct {
     VARIABLE *var;
@@ -79,7 +80,6 @@ static CONSTRAINT *cover_constraint(CONSTRAINT *con)
     VARIABLE *var = NULL;
     CONSTRAINT *inequality = NULL;
     ITEM *item = NULL;
-    int sort_item(const void *, const void *);
 
     item = (ITEM *)malloc(ncols * sizeof(ITEM));
     // new_stack  = (VARIABLE **)malloc( ncols*sizeof(ITEM) );
@@ -284,7 +284,7 @@ static double kp(int N, double *P, double *W, double C, int *X)
     return (z);
 }
 
-int sort_item(const void *i, const void *j /*ITEM *i,ITEM *j*/)
+static int sort_item(const void *i, const void *j /*ITEM *i,ITEM *j*/)
 
 {
     double vi, vj;

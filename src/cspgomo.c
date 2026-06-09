@@ -43,7 +43,7 @@ static int adding(CONSTRAINT *, double, double *, double *);
 
 /*******************************************************************/
 
-int separa_gomory(int *card, CONSTRAINT **stack)
+static int separa_gomory(int *card, CONSTRAINT **stack)
 
 {
     int i, j, k, cont;
@@ -427,7 +427,7 @@ double violation_gomory(CONSTRAINT *con, int n, VARIABLE **var)
     return (viola);
 }
 
-void control_gomory(int i, double *ra, double rhs)
+static void control_gomory(int i, double *ra, double rhs)
 
 {
     int j;

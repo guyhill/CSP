@@ -990,7 +990,7 @@ double solve_child_col(VARIABLE *col, double val, int sol)
     return (lb);
 }
 
-double solve_child_row(CONSTRAINT *row, int sol)
+static double solve_child_row(CONSTRAINT *row, int sol)
 
 {
     int i, rmatbeg, cont;

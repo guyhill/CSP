@@ -20,6 +20,5 @@ EXPORTFUNC int CSPrelbounds(int,int*,double*,double*,char);
 
 // Functions to be used inside own code
 int CSPtestprob(int,double*,int,double*,int*,char*,double*,double*,double*,double*,char**,int*,int*,signed char*);
-int CSPabsbounds(int,int*,double*,double*,char);
 int CSPpartialbounds();
 int CSPwrite(char*);

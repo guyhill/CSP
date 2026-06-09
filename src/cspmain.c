@@ -58,19 +58,19 @@ static int CSPnsums;     /* original total number of sums      */
 
 static double bestLB; /* for saving the best lower bound    */
 /*  FUNCTIONS  */
-void PPCSPSetFileNames(const char *);
-void PPCSPFreeFileNames();
-void PPCSPSetDoubleConstant(const int, double);
-double PPCSPGetDoubleConstant(const int);
-void PPCSPSetIntegerConstant(const int, int);
-int PPCSPGetIntegerConstant(const int);
-int PPCSPoptimize(IProgressListener *ProgressListener);
-int PPCSPloadprob(int, double *, int, double *, int *, char *, double *,
+static void PPCSPSetFileNames(const char *);
+static void PPCSPFreeFileNames();
+static void PPCSPSetDoubleConstant(const int, double);
+static double PPCSPGetDoubleConstant(const int);
+static void PPCSPSetIntegerConstant(const int, int);
+static int PPCSPGetIntegerConstant(const int);
+static int PPCSPoptimize(IProgressListener *ProgressListener);
+static int PPCSPloadprob(int, double *, int, double *, int *, char *, double *,
                   double *, double *, double *, char **, int *, int *,
                   signed char *);
-int PPCSPfreeprob();
-int PPCSPsolution(int *, int *, char *);
-int PPCSPrelbounds(int, int *, double *, double *, char);
+static int PPCSPfreeprob();
+static int PPCSPsolution(int *, int *, char *);
+static int PPCSPrelbounds(int, int *, double *, double *, char);
 
 // namespace SCIPv
 namespace SCIPv {
@@ -124,7 +124,7 @@ int CSPrelbounds(int nlist, int *list, double *ub, double *lb, char type) {
 #define JJOPTTOL 112
 #define JJMAXTIME 113
 
-void PPCSPSetFileNames(const char *dir) {
+static void PPCSPSetFileNames(const char *dir) {
     int maxfilenamesize = strlen(dir) + 15;
     int dirnamesize = strlen(dir) + 1;
 
@@ -160,7 +160,7 @@ void PPCSPSetFileNames(const char *dir) {
     strncat(fCSPlog, "CSPlogfile.txt", 15);
 }
 
-void PPCSPFreeFileNames() {
+static void PPCSPFreeFileNames() {
     free(fsolution);
     fsolution = NULL; /*PWOF*/
     free(fheuristi);
@@ -183,7 +183,7 @@ void PPCSPFreeFileNames() {
     fpartial = NULL;
 }
 
-void PPCSPSetDoubleConstant(const int ConstName, double ConstValue) {
+static void PPCSPSetDoubleConstant(const int ConstName, double ConstValue) {
     switch (ConstName) {
     case JJZERO:
         ZERO = ConstValue;
@@ -212,7 +212,7 @@ void PPCSPSetDoubleConstant(const int ConstName, double ConstValue) {
     }
 }
 
-double PPCSPGetDoubleConstant(const int ConstName) {
+static double PPCSPGetDoubleConstant(const int ConstName) {
     switch (ConstName) {
     case JJZERO:
         return ZERO;
@@ -234,7 +234,7 @@ double PPCSPGetDoubleConstant(const int ConstName) {
     }
 }
 
-void PPCSPSetIntegerConstant(const int ConstName, int ConstValue) {
+static void PPCSPSetIntegerConstant(const int ConstName, int ConstValue) {
     switch (ConstName) {
     case JJMAXCOLSLP:
         MAX_COLS_LP = ConstValue;
@@ -254,7 +254,7 @@ void PPCSPSetIntegerConstant(const int ConstName, int ConstValue) {
     }
 }
 
-int PPCSPGetIntegerConstant(const int ConstName) {
+static int PPCSPGetIntegerConstant(const int ConstName) {
     switch (ConstName) {
     case JJMAXCOLSLP:
         return MAX_COLS_LP;
@@ -270,7 +270,7 @@ int PPCSPGetIntegerConstant(const int ConstName) {
     }
 }
 
-int PPCSPoptimize(IProgressListener *ProgressListener) {
+static int PPCSPoptimize(IProgressListener *ProgressListener) {
     int k, lcuts, upperb_root = 0, upperb_init = 0, nbr, old_ub, root, lprows,
                   rowsinit, initpl;
     int res_prep;
@@ -552,7 +552,7 @@ OUT:
 static struct CELDA **listcell, **listsum;
 static int *nlistcell, *nlistsum;
 
-int PPCSPloadprob(int nsums_, double *rhs_, int ncells_, double *data_,
+static int PPCSPloadprob(int nsums_, double *rhs_, int ncells_, double *data_,
                   int *weight_, char *status_, double *lpl_, double *upl_,
                   double *lb_, double *ub_, char **names_, int *nlist_,
                   int *listcell_, signed char *listcoef_)
@@ -929,12 +929,27 @@ static char *copyname(char *name)
 
 /*********** fixing variables outside the LP *****************/
 
+static int sort_cols(const void *p, const void *q /*VARIABLE **p,VARIABLE **q*/)
+
+{
+  int cp, cq;
+  
+  cp = (*(VARIABLE **)p)->weight;
+  cq = (*(VARIABLE **)q)->weight;
+  if (cp < cq) {
+    return (-1);
+  }
+  if (cp > cq) {
+    return (1);
+  }
+  return (0);
+}
+
 static void init_variable_type() {
     int i, j, cont, cant, num;
     VARIABLE *col;
     VARIABLE **stack;
     int *mrow;
-    int sort_cols(const void *, const void *);
     struct CELDA *c;
 
     cont = 0;
@@ -1009,22 +1024,6 @@ static void init_variable_type() {
     // mrow = NULL; /*PWOF*/
 }
 
-int sort_cols(const void *p, const void *q /*VARIABLE **p,VARIABLE **q*/)
-
-{
-    int cp, cq;
-
-    cp = (*(VARIABLE **)p)->weight;
-    cq = (*(VARIABLE **)q)->weight;
-    if (cp < cq) {
-        return (-1);
-    }
-    if (cp > cq) {
-        return (1);
-    }
-    return (0);
-}
-
 /*********** inserting Basic Capacity Cuts in the POOL *****************/
 
 static void init_constraint_pool() {
@@ -1090,7 +1089,7 @@ static void init_constraint_pool() {
     cvar = NULL; /*PWOF*/
 }
 
-int PPCSPfreeprob() {
+static int PPCSPfreeprob() {
     int k;
     for (k = 0; k < Rncells; k++) {
         free(columns[k].name);
@@ -1129,7 +1128,7 @@ int PPCSPfreeprob() {
     return 0;
 }
 
-int PPCSPsolution(int *lowerb_, int *upperb_, char *status_) {
+static int PPCSPsolution(int *lowerb_, int *upperb_, char *status_) {
     int k;
 
     if (lowerb_) {
@@ -1152,7 +1151,7 @@ int PPCSPsolution(int *lowerb_, int *upperb_, char *status_) {
     return 0;
 }
 
-int PPCSPrelbounds(int nlist, int *list, double *ub, double *lb, char type)
+static int PPCSPrelbounds(int nlist, int *list, double *ub, double *lb, char type)
 // type 'C' = real numbers ; 'I' = integer numbers
 {
     int k, l;

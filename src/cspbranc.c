@@ -32,6 +32,7 @@ static void insert_branch(long);          /* function for sort the tree   */
 static VARIABLE *variable_branching(int); /* choosing the branch-variable */
 static void constraint_branching(int, VARIABLE **, CONSTRAINT **,
                                  CONSTRAINT **);
+static int sort_var(const void *, const void *);
 
 #define NEAR05 1   /* with fractional value nearest to 0.5 */
 #define BETTERLP 2 /* bigger PROP * LP_0 + (1-PROP) * LP_1 */
@@ -242,7 +243,6 @@ static VARIABLE *variable_branching(int type)
     double val, val0, val1, lb0, lb1, minim;
     VARIABLE *col;
     VARIABLE **stack;
-    int sort_var(const void *, const void *);
 
     col = NULL;
 
@@ -331,7 +331,7 @@ static VARIABLE *variable_branching(int type)
     return (NULL);
 }
 
-int sort_var(const void *p, const void *q /*VARIABLE **p,VARIABLE **q*/)
+static int sort_var(const void *p, const void *q /*VARIABLE **p,VARIABLE **q*/)
 
 {
     double vp, vq;
@@ -356,7 +356,7 @@ int sort_var(const void *p, const void *q /*VARIABLE **p,VARIABLE **q*/)
     return (0);
 }
 
-int con_branching() {
+static int con_branching() {
     CONSTRAINT *row0, *row1;
     double old_lowerb = lowerb;
 

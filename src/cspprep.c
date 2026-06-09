@@ -30,6 +30,18 @@ static void clean_prot_level(void);
 
 /*  FUNCTIONS DEFINITIONS */
 
+static int sort_pl(const void *p, const void *q /*PROT_LEVEL *p,PROT_LEVEL *q*/)
+
+{
+  if (((PROT_LEVEL *)p)->level < ((PROT_LEVEL *)q)->level) {
+    return (-1);
+  }
+  if (((PROT_LEVEL *)p)->level > ((PROT_LEVEL *)q)->level) {
+    return (+1);
+  }
+  return (0);
+}
+
 int preprocessing() {
     int k, l, nvar;
     double lpl, upl;
@@ -37,7 +49,6 @@ int preprocessing() {
     double *primal, *cvar;
     VARIABLE **xvar;
     CONSTRAINT *con;
-    int sort_pl(const void *, const void *);
 
     clean_prot_level();
     if (nprot_level == 0) {
@@ -131,18 +142,6 @@ int preprocessing() {
         }
     }
     return (l1u1 + l1u0 + l0u1);
-}
-
-int sort_pl(const void *p, const void *q /*PROT_LEVEL *p,PROT_LEVEL *q*/)
-
-{
-    if (((PROT_LEVEL *)p)->level < ((PROT_LEVEL *)q)->level) {
-        return (-1);
-    }
-    if (((PROT_LEVEL *)p)->level > ((PROT_LEVEL *)q)->level) {
-        return (+1);
-    }
-    return (0);
 }
 
 static void clean_prot_level() {

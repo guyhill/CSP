@@ -24,11 +24,11 @@
 
 /* PROTOTYPES OF FUNCTIONS */
 
-int protected1(double *);
+static int protected1(double *);
 
 /* PRIVATE GLOBAL DATA TO INTERPRETATE THE DUAL SOLUTION */
 
-int row_inside(CONSTRAINT *, int, CONSTRAINT **);
+static int row_inside(CONSTRAINT *, int, CONSTRAINT **);
 static int *net2cell; /* cell number in the network of a node         */
 static int *cell2net; /* node associated with a cell of the network   */
 static int *net2sum;  /* sum number in the network of a node          */
@@ -71,7 +71,7 @@ int protected_flow(int nlist, VARIABLE **list)
     return (k);
 }
 
-int protected1(double *status)
+static int protected1(double *status)
 
 {
     int k, l;
@@ -302,7 +302,7 @@ void unload_network() {
 *** Bounding the lower/upper cell variations
 **/
 
-void bounding_bds(int bound)
+static void bounding_bds(int bound)
 
 {
     int k, l, mac;

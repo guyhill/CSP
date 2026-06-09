@@ -552,7 +552,7 @@ static void restore_cell(int index, double *bd)
     JJchgbds(Nlp, 4, ind, lu, bd);
 }
 
-int sort_cells(const void *p, const void *q /*int *p,int *q*/)
+static int sort_cells(const void *p, const void *q /*int *p,int *q*/)
 
 {
     int cp, cq;
@@ -574,7 +574,6 @@ static void potential_innecesary(int *nlist, int *list)
     int *rnumber;
     VARIABLE **rvar, **stack;
     char *status;
-    // int  sort_cells(const void*,const void*);
 
     rnumber = (int *)calloc((nrows + 1), sizeof(int));
     if (rnumber == NULL) {

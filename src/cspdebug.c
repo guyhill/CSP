@@ -28,18 +28,9 @@
 #include "my_time.h"
 #include "cspdebug.h"
 
-static int in_better(VARIABLE *);
-static void testing(CONSTRAINT *);
-
-void print_rows(void);
-int print_row(CONSTRAINT *);
-int print_col(VARIABLE *);
-void print_sol();
-void control_pool(void);
-double violated_by_heur(CONSTRAINT *);
-void writing_lp(void);
-void print_card_cover(void);
-void testing_pool(void);
+static int print_row(CONSTRAINT *);
+static int print_col(VARIABLE *);
+static double violated_by_heur(CONSTRAINT *);
 
 void write_sol(char *text)
 
@@ -119,7 +110,7 @@ void write_heu(const char *text)
     }
 }
 
-void print_sol() {
+static void print_sol() {
     int k;
     VARIABLE *col;
     for (k = 0; k < nsupport; k++) {
@@ -235,21 +226,21 @@ int control_ind() {
     return (0);
 }
 
-void print_pool() {
+static void print_pool() {
     int i;
     for (i = 0; i < nrows; i++) {
         print_row(rows[i]);
     }
 }
 
-void print_lp() {
+static void print_lp() {
     int i;
     for (i = 0; i < mar; i++) {
         print_row(rind[i]);
     }
 }
 
-int print_row(CONSTRAINT *con)
+static int print_row(CONSTRAINT *con)
 
 {
     int card = 0;
@@ -312,7 +303,7 @@ int print_row(CONSTRAINT *con)
     return (0);
 }
 
-int print_col(VARIABLE *var)
+static int print_col(VARIABLE *var)
 
 {
     if (var == NULL) {
@@ -322,7 +313,7 @@ int print_col(VARIABLE *var)
     return (0);
 }
 
-void print_card_cover() {
+static void print_card_cover() {
     int i;
 
     std::cout << "  card of covers in pool: ";
@@ -346,7 +337,7 @@ static int in_better(VARIABLE *col)
     return (0);
 }
 
-void read_heuristic(char *name)
+static void read_heuristic(char *name)
 
 {
     int i, col;
@@ -374,7 +365,7 @@ void read_heuristic(char *name)
     }
 }
 
-void writing_lp() {
+static void writing_lp() {
     int k;
 
     for (k = 0; k < mac; k++) {
@@ -382,7 +373,7 @@ void writing_lp() {
     }
 }
 
-void control_pool() {
+static void control_pool() {
     int k;
 
     std::cout << "    Controlling pool with heuristic:" << std::endl;
@@ -399,7 +390,7 @@ void control_pool() {
     }
 }
 
-double violated_by_heur(CONSTRAINT *con)
+static double violated_by_heur(CONSTRAINT *con)
 
 {
     int card = 0;
@@ -512,7 +503,7 @@ int control_constraint(CONSTRAINT *con)
     return (1);
 }
 
-void control_cut(int nnod, int nedg, int source, int sink, int *fr, int *to,
+static void control_cut(int nnod, int nedg, int source, int sink, int *fr, int *to,
                  double *weight, double minvalue, int ncut, char *cutlst)
 
 {
@@ -583,7 +574,7 @@ static void testing(CONSTRAINT *con)
     }
 }
 
-void testing_pool() {
+static void testing_pool() {
     int i;
     for (i = 0; i < nrows; i++) {
         if (rows[i]->type != BRANCHCUT) {
